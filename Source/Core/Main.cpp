@@ -13,18 +13,12 @@
 using namespace Corvus;
 
 int main() {
+    CORVUS_LOG(info, "Hello, Corvus!");
     auto window = std::make_unique<Window>(800, 600, "Corvus Viewport");
-    spdlog::info("Welcome to spdlog!");
-    Log::log("Hello from Log!");
 
     uint32_t extensionCount = 0;
     vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
-
-    std::cout << extensionCount << " extensions supported\n";
-
-    glm::mat4 matrix;
-    glm::vec4 vec;
-    auto test = matrix * vec;
+    CORVUS_LOG(info, "Vulkan: {} extensions supported", extensionCount);
 
     while(not window->shouldClose()) {
         window->update();

@@ -7,14 +7,8 @@
 
 #include "spdlog/spdlog.h"
 
-class Log {
-
-public:
-    static void log(const std::string& message) {
-        spdlog::info(message);
-    }
-
-};
+#define CORVUS_LOG(Level, ...) spdlog::Level(__VA_ARGS__)
+#define CORVUS_TRACE(...) CORVUS_LOG(trace, __VA_ARGS__)
 
 
 #endif //ENGINE_LOG_H

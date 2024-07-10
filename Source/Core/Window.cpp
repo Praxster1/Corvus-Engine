@@ -3,14 +3,13 @@
 //
 
 #include "Window.h"
+#include "Utility/Log.h"
 #include <iostream>
 
 namespace Corvus {
-
-
     Window::Window(uint32_t width, uint32_t height, const char *title, bool fullscren) {
         if (not glfwInit()) {
-            std::cout << "Failed to initialize GLFW!" << std::endl;
+            CORVUS_LOG(error, "Failed to initialize GLFW!");
         } else {
             glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // Disable OpenGL
             glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // Disable window resizing
@@ -21,18 +20,18 @@ namespace Corvus {
                 height = glfwGetVideoMode(m_Monitor)->height;
             }
 
-            std::cout << "Resolution:" << width << "x" << height << std::endl;
             m_Window = glfwCreateWindow(static_cast<int>(width), static_cast<int>(height), title, m_Monitor, nullptr);
-
             if (!m_Window) {
-                std::cout << "Failed to create window!" << std::endl;
+                CORVUS_LOG(error, "Failed to create window!");
             } else {
+                CORVUS_LOG(info, "Window Resolution: {}x{}", width, height);
                 glfwMakeContextCurrent(m_Window);
             }
         }
     }
 
     Window::~Window() {
+        CORVUS_LOG(info, "Destroying window...");
         glfwDestroyWindow(m_Window);
         glfwTerminate();
     }

@@ -1,5 +1,4 @@
 list(APPEND LOCAL_SOURCE_FILES
-        Log.cpp
 )
 
 foreach(file ${LOCAL_SOURCE_FILES})
