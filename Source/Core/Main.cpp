@@ -1,5 +1,7 @@
 
 #include "Window.h"
+#include "spdlog/spdlog.h"
+#include "Utility/Log.h"
 
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/vec4.hpp>
@@ -11,7 +13,9 @@
 using namespace Corvus;
 
 int main() {
-    auto window = std::make_unique<Window>(800, 600, "Corvus Engine");
+    auto window = std::make_unique<Window>(800, 600, "Corvus Viewport");
+    spdlog::info("Welcome to spdlog!");
+    Log::log("Hello from Log!");
 
     uint32_t extensionCount = 0;
     vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
@@ -23,8 +27,8 @@ int main() {
     auto test = matrix * vec;
 
     while(not window->shouldClose()) {
-        glfwPollEvents();
+        window->update();
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }

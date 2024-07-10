@@ -1,4 +1,3 @@
-
 list(APPEND LOCAL_SOURCE_FILES
         Renderer.cpp
 )

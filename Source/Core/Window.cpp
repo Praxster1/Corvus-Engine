@@ -9,10 +9,11 @@ namespace Corvus {
 
 
     Window::Window(uint32_t width, uint32_t height, const char *title, bool fullscren) {
-        if (!glfwInit()) {
+        if (not glfwInit()) {
             std::cout << "Failed to initialize GLFW!" << std::endl;
         } else {
-            glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+            glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // Disable OpenGL
+            glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // Disable window resizing
 
             if (fullscren) {
                 m_Monitor = glfwGetPrimaryMonitor();
