@@ -1,16 +1,27 @@
-//
-// Created by timow on 10/07/2024.
-//
-
 #ifndef ENGINE_WINDOW_H
 #define ENGINE_WINDOW_H
 
-namespace CorvusCore {
+#define GLFW_INCLUDE_VULKAN
+#include "GLFW/glfw3.h"
 
-    class Window {
+namespace Corvus {
+
+    class Window
+    {
+    private:
+        GLFWwindow* m_Window = nullptr;
+        GLFWmonitor* m_Monitor = nullptr;
+
+    public:
+        Window(uint32_t width, uint32_t height, const char* title, bool fullscreen = false);
+        ~Window();
+
+        void update() const;
+        bool shouldClose() const;
 
     };
 
-} // Core
+
+} // Corvus
 
 #endif //ENGINE_WINDOW_H

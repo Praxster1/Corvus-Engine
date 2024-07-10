@@ -5,10 +5,13 @@ project(Engine)
 set(SOURCE_FILES)
 
 add_subdirectory(Source)
-add_subdirectory(Vendor)
+add_subdirectory(External)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Include/")
-target_link_libraries(${PROJECT_NAME} PRIVATE glfw glm)
+
+find_package(Vulkan REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE glfw glm Vulkan::Vulkan)
+
 
