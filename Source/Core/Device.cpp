@@ -15,8 +15,6 @@ Device::Device() {
 
     createInstance(&m_Instance, &createInfo);
     initDebugMessenger(&createInfo);
-
-
 }
 
 Device::~Device() {

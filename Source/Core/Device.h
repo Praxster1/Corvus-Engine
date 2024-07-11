@@ -13,6 +13,11 @@
 #include <vector>
 
 class Device {
+public:
+
+    explicit Device();
+    ~Device();
+
 private:
     VkInstance m_Instance = {};
     VkDebugUtilsMessengerEXT m_DebugMessenger = {};
@@ -49,10 +54,7 @@ private:
 
     void initCreateInfo(VkInstanceCreateInfo &createInfo, VkApplicationInfo *appInfo);
 
-public:
-    explicit Device();
 
-    ~Device();
 };
 
 

@@ -7,6 +7,7 @@ Corvus::Engine::Engine() {
     m_Window = std::make_unique<Window>("Corvus Viewport");
     m_Device = std::make_unique<Device>();
     m_Renderer = std::make_unique<Renderer>();
+    m_Pipeline = std::make_unique<Pipeline>(R"(C:\Projects\C++\Corvus-Engine\shaders\simple_shader.vert.spv)", R"(C:\Projects\C++\Corvus-Engine\shaders\simple_shader.frag.spv)");
 }
 
 void Corvus::Engine::run() {
