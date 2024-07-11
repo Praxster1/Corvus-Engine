@@ -1,4 +1,6 @@
 list(APPEND LOCAL_SOURCE_FILES
+        Corvus.h
+        Log.h
 )
 
 foreach(file ${LOCAL_SOURCE_FILES})

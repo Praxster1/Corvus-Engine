@@ -7,14 +7,14 @@
 #include <iostream>
 
 namespace Corvus {
-    Window::Window(uint32_t width, uint32_t height, const char *title, bool fullscren) {
+    Window::Window(const char *title, bool fullscreen, uint32_t width, uint32_t height) {
         if (not glfwInit()) {
             CORVUS_LOG(error, "Failed to initialize GLFW!");
         } else {
             glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // Disable OpenGL
             glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // Disable window resizing
 
-            if (fullscren) {
+            if (fullscreen) {
                 m_Monitor = glfwGetPrimaryMonitor();
                 width = glfwGetVideoMode(m_Monitor)->width;
                 height = glfwGetVideoMode(m_Monitor)->height;

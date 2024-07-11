@@ -13,11 +13,11 @@ namespace Corvus {
         GLFWmonitor* m_Monitor = nullptr;
 
     public:
-        Window(uint32_t width, uint32_t height, const char* title, bool fullscreen = false);
+        explicit Window(const char *title, bool fullscreen = false, uint32_t width = 1920, uint32_t height = 1080);
         ~Window();
 
         void update() const;
-        bool shouldClose() const;
+        [[nodiscard]] bool shouldClose() const;
 
     };
 

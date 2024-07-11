@@ -2,7 +2,12 @@ cmake_minimum_required(VERSION 3.21)
 set(CMAKE_CXX_STANDARD 23)
 
 project(Engine)
-add_executable(${PROJECT_NAME})
+add_executable(${PROJECT_NAME}
+        Source/Core/Device.cpp
+        Source/Core/Device.h
+        Source/Core/Device.h
+        Source/Utility/Corvus.h
+)
 
 add_subdirectory(Source)
 add_subdirectory(External)

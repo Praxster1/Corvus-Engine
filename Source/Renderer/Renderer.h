@@ -6,8 +6,21 @@
 #define ENGINE_RENDERER_H
 
 
-class Renderer {
+#include <vulkan/vulkan.h>
 
+class Renderer {
+private:
+    VkInstance m_Instance;
+
+public:
+    Renderer();
+    ~Renderer();
+
+
+    static void createInstance(VkInstance* instance, VkInstanceCreateInfo* createInfo);
+    static void destroyInstance(VkInstance& instance);
+    static void initAppInfo(VkApplicationInfo& appInfo);
+    static void initCreateInfo(VkInstanceCreateInfo& createInfo, VkApplicationInfo* appInfo);
 };
 
 

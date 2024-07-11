@@ -2,6 +2,7 @@ list(APPEND LOCAL_SOURCE_FILES
         Main.cpp
         Engine.cpp
         Window.cpp
+        Device.cpp
 )
 
 foreach(file ${LOCAL_SOURCE_FILES})
