@@ -30,7 +30,7 @@ namespace Corvus {
             destroyDebugUtilsMessengerEXT(m_Instance, m_DebugMessenger, nullptr);
         }
 
-        for (auto imageView : m_SwapChainImageViews) {
+        for (auto imageView: m_SwapChainImageViews) {
             vkDestroyImageView(m_Device, imageView, nullptr);
         }
 
@@ -41,12 +41,8 @@ namespace Corvus {
     }
 
     void Device::createInstance(VkInstance *instance, VkInstanceCreateInfo *createInfo) {
-        if (vkCreateInstance(createInfo, nullptr, instance) != VK_SUCCESS) {
-            CORVUS_LOG(error, "Failed to create Vulkan instance! Shutting down...");
-            exit(EXIT_FAILURE);
-        } else {
-            CORVUS_LOG(info, "Vulkan instance created successfully!");
-        }
+        auto success = vkCreateInstance(createInfo, nullptr, instance);
+        CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create Vulkan instance!");
     }
 
     void Device::destroyInstance(VkInstance &instance) {
@@ -105,10 +101,8 @@ namespace Corvus {
     }
 
     void Device::enableValidationLayers(VkInstanceCreateInfo *createInfo) {
-        if (m_EnableValidationLayers && !checkValidationLayerSupport()) {
-            CORVUS_LOG(error, "Validation layers requested, but not available! Shutting down...");
-            exit(EXIT_FAILURE);
-        }
+        CORVUS_ASSERT(not(m_EnableValidationLayers and not checkValidationLayerSupport()),
+                      "Validation layers requested, but not available!");
 
         if (m_EnableValidationLayers) {
             createInfo->enabledLayerCount = static_cast<uint32_t>(m_ValidationLayers.size());
@@ -155,12 +149,8 @@ namespace Corvus {
         createInfo->pNext = (VkDebugUtilsMessengerCreateInfoEXT *) &debugCreateInfo;
 
         auto createDebugMsg = createDebugUtilsMessengerEXT(m_Instance, &debugCreateInfo, nullptr, &m_DebugMessenger);
-        if (createDebugMsg != VK_SUCCESS) {
-            CORVUS_LOG(error, "Failed to set up debug messenger! Shutting down...");
-            exit(EXIT_FAILURE);
-        } else {
-            CORVUS_LOG(info, "Debug messenger set up successfully!");
-        }
+        CORVUS_ASSERT(createDebugMsg == VK_SUCCESS, "Failed to set up debug messenger!");
+        CORVUS_LOG(info, "Debug messenger set up successfully!");
     }
 
     VkResult
@@ -236,13 +226,8 @@ namespace Corvus {
                 break;
             }
         }
-
-        if (m_PhysicalDevice == VK_NULL_HANDLE) {
-            CORVUS_LOG(error, "Failed to find a suitable GPU! Shutting down...");
-            exit(EXIT_FAILURE);
-        } else {
-            CORVUS_LOG(info, "Physical device found successfully!");
-        }
+        CORVUS_ASSERT(m_PhysicalDevice != VK_NULL_HANDLE, "Failed to find a suitable GPU!");
+        CORVUS_LOG(info, "Physical device found successfully!");
     }
 
     QueueFamilyIndices Device::findQueueFamilies(VkPhysicalDevice device) {
@@ -303,24 +288,18 @@ namespace Corvus {
         createInfo.enabledExtensionCount = static_cast<uint32_t>(m_DeviceExtensions.size());
         createInfo.ppEnabledExtensionNames = m_DeviceExtensions.data();
 
-        if (vkCreateDevice(m_PhysicalDevice, &createInfo, nullptr, &m_Device) != VK_SUCCESS) {
-            CORVUS_LOG(error, "Failed to create logical device! Shutting down...");
-            exit(EXIT_FAILURE);
-        } else {
-            CORVUS_LOG(info, "Logical device created successfully!");
-        }
+        auto success = vkCreateDevice(m_PhysicalDevice, &createInfo, nullptr, &m_Device);
+        CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create logical device!");
+        CORVUS_LOG(info, "Logical device created successfully!");
 
         vkGetDeviceQueue(m_Device, indices.graphicsFamily.value(), 0, &graphicsQueue);
         vkGetDeviceQueue(m_Device, indices.presentFamily.value(), 0, &presentQueue);
     }
 
     void Device::createSurface() {
-        if (glfwCreateWindowSurface(m_Instance, m_Window->getHandle(), nullptr, &m_Surface) != VK_SUCCESS) {
-            CORVUS_LOG(error, "Failed to create window surface! Shutting down...");
-            exit(EXIT_FAILURE);
-        } else {
-            CORVUS_LOG(info, "Window surface created successfully!");
-        }
+        auto success = glfwCreateWindowSurface(m_Instance, m_Window->getHandle(), nullptr, &m_Surface);
+        CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create window surface!");
+        CORVUS_LOG(info, "Window surface created successfully!");
     }
 
     bool Device::checkDeviceExtensionSupport(VkPhysicalDevice device) {
@@ -440,12 +419,9 @@ namespace Corvus {
         createInfo.presentMode = presentMode;
         createInfo.clipped = VK_TRUE;
 
-        if (vkCreateSwapchainKHR(m_Device, &createInfo, nullptr, &m_SwapChain) != VK_SUCCESS) {
-            CORVUS_LOG(error, "Failed to create swap chain! Shutting down...");
-            exit(EXIT_FAILURE);
-        } else {
-            CORVUS_LOG(info, "Swap chain created successfully!");
-        }
+        auto success = vkCreateSwapchainKHR(m_Device, &createInfo, nullptr, &m_SwapChain);
+        CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create swap chain!");
+        CORVUS_LOG(info, "Swap chain created successfully!");
 
         vkGetSwapchainImagesKHR(m_Device, m_SwapChain, &imageCount, nullptr);
         m_SwapChainImages.resize(imageCount);
@@ -474,10 +450,8 @@ namespace Corvus {
             createInfo.subresourceRange.baseArrayLayer = 0;
             createInfo.subresourceRange.layerCount = 1;
 
-            if (vkCreateImageView(m_Device, &createInfo, nullptr, &m_SwapChainImageViews[i]) != VK_SUCCESS) {
-                CORVUS_LOG(error, "Failed to create image views! Shutting down...");
-                exit(EXIT_FAILURE);
-            }
+            auto success = vkCreateImageView(m_Device, &createInfo, nullptr, &m_SwapChainImageViews[i]);
+            CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create image views!");
         }
         CORVUS_LOG(info, "Image views created successfully!");
     }

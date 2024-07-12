@@ -13,4 +13,6 @@
 #define CORVUS_VALIDATION_LAYERS true
 #endif
 
+#define CORVUS_ASSERT(condition, message) if(not (condition)) { CORVUS_LOG(error, message); abort(); }
+
 #endif //ENGINE_CORVUS_H
