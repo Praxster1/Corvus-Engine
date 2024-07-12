@@ -11,7 +11,7 @@ namespace Corvus {
 
     class Engine {
     private:
-        std::unique_ptr<Window> m_Window;
+        std::shared_ptr<Window> m_Window;
         std::unique_ptr<Renderer> m_Renderer;
         std::unique_ptr<Device> m_Device;
         std::unique_ptr<Pipeline> m_Pipeline;

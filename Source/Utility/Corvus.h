@@ -5,6 +5,8 @@
 #ifndef ENGINE_CORVUS_H
 #define ENGINE_CORVUS_H
 
+#define ENGINE_NAME "Corvus"
+
 #ifdef NDEBUG
 #define CORVUS_VALIDATION_LAYERS false
 #else

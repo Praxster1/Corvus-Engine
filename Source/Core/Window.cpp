@@ -6,26 +6,32 @@
 #include "Utility/Log.h"
 #include <iostream>
 
+void glfwErrorCallback(int error, const char *description) {
+    // Do nothing
+    CORVUS_LOG(error, "GLFW Error: [{}] {}", error, description);
+}
+
+
 namespace Corvus {
     Window::Window(const char *title, bool fullscreen, uint32_t width, uint32_t height) {
         if (not glfwInit()) {
             CORVUS_LOG(error, "Failed to initialize GLFW!");
         } else {
-            glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // Disable OpenGL
-            glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // Disable window resizing
 
             if (fullscreen) {
                 m_Monitor = glfwGetPrimaryMonitor();
                 width = glfwGetVideoMode(m_Monitor)->width;
                 height = glfwGetVideoMode(m_Monitor)->height;
             }
-
-            m_Window = glfwCreateWindow(static_cast<int>(width), static_cast<int>(height), title, m_Monitor, nullptr);
-            if (!m_Window) {
+            glfwSetErrorCallback(glfwErrorCallback);
+            glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // Disable OpenGL
+            glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // Disable window resizing
+            m_Window = glfwCreateWindow(static_cast<int>(width), static_cast<int>(height), title, nullptr, nullptr);
+            if (not m_Window) {
                 CORVUS_LOG(error, "Failed to create window!");
             } else {
                 CORVUS_LOG(info, "Window Resolution: {}x{}", width, height);
-                glfwMakeContextCurrent(m_Window);
+                //glfwMakeContextCurrent(m_Window);
             }
         }
     }
@@ -37,7 +43,7 @@ namespace Corvus {
     }
 
     void Window::update() const {
-        glfwSwapBuffers(m_Window);
+        //glfwSwapBuffers(m_Window);
         glfwPollEvents();
     }
 

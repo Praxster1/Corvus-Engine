@@ -18,6 +18,7 @@ namespace Corvus {
 
         void update() const;
         [[nodiscard]] bool shouldClose() const;
+        [[nodiscard]] GLFWwindow *getHandle() const { return m_Window; }
 
     };
 
