@@ -16,11 +16,8 @@ namespace Corvus {
         std::unique_ptr<Device> m_Device;
         std::unique_ptr<Pipeline> m_Pipeline;
 
-    private:
-
     public:
         Engine();
-
         ~Engine();
 
         void run();

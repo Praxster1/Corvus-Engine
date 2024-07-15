@@ -7,10 +7,11 @@
 
 #include "Utility/Corvus.h"
 #include "Core/Window.h"
+#include "SwapChain.h"
+#include "QueueFamilyIndices.h"
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-
 
 #include <vector>
 #include <optional>
@@ -18,19 +19,10 @@
 
 namespace Corvus {
 
-    struct QueueFamilyIndices {
-        std::optional<uint32_t> graphicsFamily;
-        std::optional<uint32_t> presentFamily;
-
-        [[nodiscard]] bool isComplete() const {
-            return graphicsFamily.has_value() and presentFamily.has_value();
-        }
-    };
-
-    struct SwapChainSupportDetails {
-        VkSurfaceCapabilitiesKHR capabilities;
-        std::vector<VkSurfaceFormatKHR> formats;
-        std::vector<VkPresentModeKHR> presentModes;
+    struct InstanceInfo {
+        VkInstance instance;
+        VkApplicationInfo appInfo;
+        VkInstanceCreateInfo createInfo;
     };
 
     class Device {
@@ -40,65 +32,40 @@ namespace Corvus {
 
     private:
         std::shared_ptr<Window> m_Window;
-        VkInstance m_Instance = {};
+        InstanceInfo m_InstanceInfo = {};
         VkPhysicalDevice m_PhysicalDevice = VK_NULL_HANDLE;
         VkDevice m_Device = {};
-        VkQueue graphicsQueue = {}, presentQueue = {};
+        VkQueue graphicsQueue{}, presentQueue = {};
         VkSurfaceKHR m_Surface = {};
         VkDebugUtilsMessengerEXT m_DebugMessenger = {};
 
-        VkSwapchainKHR m_SwapChain = {};
-        std::vector<VkImage> m_SwapChainImages = {};
-        VkFormat m_SwapChainImageFormat = {};
-        VkExtent2D m_SwapChainExtent = {};
+        SwapChain m_SwapChain = {};
 
-        std::vector<VkImageView> m_SwapChainImageViews;
-
-
-        const bool m_EnableValidationLayers = CORVUS_VALIDATION_LAYERS;
         const std::vector<const char *> m_ValidationLayers = {"VK_LAYER_KHRONOS_validation"};
         const std::vector<const char *> m_DeviceExtensions = {"VK_KHR_swapchain"};
 
     private:
-        void createInstance(VkInstance *instance, VkInstanceCreateInfo *createInfo);
-
-        void destroyInstance(VkInstance &instance);
-
-        void initAppInfo(VkApplicationInfo &appInfo);
-
-        void initCreateInfo(VkInstanceCreateInfo &createInfo, VkApplicationInfo *appInfo);
+        void createInstance();
 
         bool checkValidationLayerSupport();
 
         void enableValidationLayers(VkInstanceCreateInfo *createInfo);
 
-        void initDebugMessenger(VkInstanceCreateInfo *createInfo);
+        void initDebugMessenger();
 
-        void initDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &debugCreateInfo);
+        static void initDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &debugCreateInfo);
 
         void pickPhysicalDevice();
 
         bool isDeviceSuitable(VkPhysicalDevice device);
 
-        QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
-
-        [[nodiscard]] std::vector<const char *> getRequiredExtensions() const;
+        [[nodiscard]] static std::vector<const char *> getRequiredExtensions() ;
 
         void createLogicalDevice();
 
         void createSurface();
 
         bool checkDeviceExtensionSupport(VkPhysicalDevice device);
-
-        VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats);
-
-        VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
-
-        VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
-
-        SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
-
-        void createSwapChain();
 
         void createImageViews();
 
@@ -107,13 +74,9 @@ namespace Corvus {
                                                             const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
                                                             void *pUserData);
 
-        static VkResult createDebugUtilsMessengerEXT(VkInstance instance,
-                                                     const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo,
-                                                     const VkAllocationCallbacks *pAllocator,
-                                                     VkDebugUtilsMessengerEXT *pDebugMessenger);
+        VkResult createDebugUtilsMessengerEXT(const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo);
 
-        static void destroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger,
-                                                  const VkAllocationCallbacks *pAllocator);
+        void destroyDebugUtilsMessengerEXT();
     };
 } // Corvus
 
