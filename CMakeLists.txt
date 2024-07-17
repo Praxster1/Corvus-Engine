@@ -3,11 +3,8 @@ set(CMAKE_CXX_STANDARD 23)
 
 project(Engine)
 add_executable(${PROJECT_NAME}
-        Source/Renderer/Pipeline.cpp
-        Source/Core/SwapChain.h
-        Source/Core/SwapChain.cpp
-        Source/Core/QueueFamilyIndices.cpp
-        Source/Core/QueueFamilyIndices.h)
+        Source/Renderer/Shader.cpp
+        Source/Renderer/Shader.h)
 
 add_subdirectory(Source)
 add_subdirectory(External)

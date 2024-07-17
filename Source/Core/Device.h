@@ -30,6 +30,13 @@ namespace Corvus {
         explicit Device(std::shared_ptr<Window> window);
         ~Device();
 
+        [[nodiscard]] VkDevice getDevice() const { return m_Device; }
+        [[nodiscard]] VkPhysicalDevice getPhysicalDevice() const { return m_PhysicalDevice; }
+        [[nodiscard]] VkSurfaceKHR getSurface() const { return m_Surface; }
+        [[nodiscard]] VkQueue getGraphicsQueue() const { return graphicsQueue; }
+        [[nodiscard]] VkQueue getPresentQueue() const { return presentQueue; }
+        [[nodiscard]] SwapChain &getSwapChain() { return m_SwapChain; }
+
     private:
         std::shared_ptr<Window> m_Window;
         InstanceInfo m_InstanceInfo = {};

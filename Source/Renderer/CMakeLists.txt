@@ -1,5 +1,5 @@
 list(APPEND LOCAL_SOURCE_FILES
-        Renderer.cpp
+        Pipeline.cpp
 )
 
 foreach(file ${LOCAL_SOURCE_FILES})

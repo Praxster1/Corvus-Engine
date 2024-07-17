@@ -3,6 +3,8 @@ list(APPEND LOCAL_SOURCE_FILES
         Engine.cpp
         Window.cpp
         Device.cpp
+        SwapChain.cpp
+        QueueFamilyIndices.cpp
 )
 
 foreach(file ${LOCAL_SOURCE_FILES})
