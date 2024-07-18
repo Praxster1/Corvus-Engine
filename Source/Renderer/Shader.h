@@ -14,13 +14,14 @@ namespace Corvus
     {
     private:
         std::shared_ptr<Device> m_Device;
-        const char* m_Identifier;
+        const char *m_Identifier;
         VkShaderModule m_Module = VK_NULL_HANDLE;
 
     public:
-        Shader(const char* identifier, const std::vector<char> &code, std::shared_ptr<Device> device);
+        Shader(const char *identifier, const std::vector<char> &code, std::shared_ptr<Device> device);
         ~Shader();
         [[nodiscard]] VkShaderModule getModule() const;
+        [[nodiscard]] const char *getIdentifier() const { return m_Identifier; }
     };
 
 } // Corvus

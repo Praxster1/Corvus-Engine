@@ -38,6 +38,7 @@ namespace Corvus
         [[nodiscard]] VkExtent2D getExtent() const { return extent; }
         [[nodiscard]] const std::vector<VkImage> &getImages() const { return images; }
         [[nodiscard]] std::vector<VkImageView> &getImageViews() { return imageViews; }
+        [[nodiscard]] std::vector<VkFramebuffer> &getFramebuffers() { return framebuffers; }
         [[nodiscard]] const SwapChainSupportDetails &getSupportDetails() const { return supportDetails; }
 
     private:
@@ -46,6 +47,7 @@ namespace Corvus
         VkExtent2D extent{};
         std::vector<VkImage> images{};
         std::vector<VkImageView> imageViews{};
+        std::vector<VkFramebuffer> framebuffers{};
         SwapChainSupportDetails supportDetails{};
 
         VkSurfaceFormatKHR chooseSwapSurfaceFormat();

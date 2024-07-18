@@ -16,10 +16,15 @@ namespace Corvus
 
         m_SwapChain = SwapChain(m_Device, m_PhysicalDevice, m_Surface, m_Window->getHandle());
         createImageViews();
+        createRenderPass(); // TODO: Maybe move into Renderer Pipeline class (???)
+        createFramebuffers();
+        createCommandPool();
+        createCommandBuffers();
     }
 
     Device::~Device()
     {
+        vkDestroyRenderPass(m_Device, m_RenderPass, nullptr);
         m_SwapChain.destroy(m_Device);
         vkDestroyDevice(m_Device, nullptr);
         vkDestroySurfaceKHR(m_Instance.getInstance(), m_Surface, nullptr);
@@ -156,6 +161,99 @@ namespace Corvus
             CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create image views!")
         }
         CORVUS_LOG(info, "Image views created successfully!");
+    }
+
+    void Device::createRenderPass()
+    {
+        VkAttachmentDescription colorAttachment = {
+                .format = m_SwapChain.getImageFormat(),
+                .samples = VK_SAMPLE_COUNT_1_BIT,
+                .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR,
+                .storeOp = VK_ATTACHMENT_STORE_OP_STORE,
+                .stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
+                .finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR
+        };
+
+        VkAttachmentReference colorAttachmentRef = {
+                .attachment = 0,
+                .layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+        };
+
+        VkSubpassDescription subpass = {
+                .pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
+                .colorAttachmentCount = 1,
+                .pColorAttachments = &colorAttachmentRef
+        };
+
+        VkRenderPassCreateInfo renderPassInfo = {
+                .sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+                .attachmentCount = 1,
+                .pAttachments = &colorAttachment,
+                .subpassCount = 1,
+                .pSubpasses = &subpass
+        };
+
+        auto success = vkCreateRenderPass(m_Device, &renderPassInfo, nullptr, &m_RenderPass);
+        CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create render pass!")
+        CORVUS_LOG(info, "Render pass created successfully!");
+    }
+    void Device::createFramebuffers()
+    {
+        auto &imageViews = m_SwapChain.getImageViews();
+        auto swapChainExtent = m_SwapChain.getExtent();
+        auto framebuffers = m_SwapChain.getFramebuffers();
+
+        framebuffers.resize(imageViews.size());
+
+        for (size_t i = 0; i < imageViews.size(); i++)
+        {
+            VkImageView attachments[] = {imageViews[i]};
+
+            VkFramebufferCreateInfo framebufferInfo = {
+                    .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+                    .renderPass = m_RenderPass,
+                    .attachmentCount = 1,
+                    .pAttachments = attachments,
+                    .width = swapChainExtent.width,
+                    .height = swapChainExtent.height,
+                    .layers = 1
+            };
+
+            auto success = vkCreateFramebuffer(m_Device, &framebufferInfo, nullptr, &framebuffers[i]);
+            CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create framebuffer!")
+        }
+        CORVUS_LOG(info, "Framebuffers created successfully!");
+    }
+
+    void Device::createCommandPool()
+    {
+        QueueFamilyIndices queueFamilyIndices = QueueFamilyIndices::findQueueFamilies(m_PhysicalDevice, m_Surface);
+
+        VkCommandPoolCreateInfo poolInfo = {
+                .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+                .flags = 0,
+                .queueFamilyIndex = queueFamilyIndices.graphicsFamily.value(),
+        };
+
+        auto success = vkCreateCommandPool(m_Device, &poolInfo, nullptr, &m_CommandPool);
+        CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create command pool!")
+        CORVUS_LOG(info, "Command pool created successfully!");
+    }
+
+    void Device::createCommandBuffers()
+    {
+        VkCommandBufferAllocateInfo allocInfo = {
+                .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+                .commandPool = m_CommandPool,
+                .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+                .commandBufferCount = 1,
+        };
+
+        auto success = vkAllocateCommandBuffers(m_Device, &allocInfo, &m_CommandBuffers);
+        CORVUS_ASSERT(success == VK_SUCCESS, "Failed to allocate command buffers!")
+        CORVUS_LOG(info, "Command buffers allocated successfully!");
     }
 
 } // Corvus

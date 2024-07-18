@@ -20,6 +20,9 @@ namespace Corvus
         Shader m_VertexShader;
         Shader m_FragmentShader;
 
+        VkPipelineLayout m_PipelineLayout = VK_NULL_HANDLE;
+        VkPipeline m_Pipeline = VK_NULL_HANDLE;
+
         static std::vector<char> readFile(const std::string &filename);
         void createGraphicsPipeline();
     };

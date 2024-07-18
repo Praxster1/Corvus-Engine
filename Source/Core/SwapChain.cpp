@@ -132,6 +132,9 @@ namespace Corvus
 
     void SwapChain::destroy(VkDevice device) const
     {
+        for (auto framebuffer : framebuffers)
+            vkDestroyFramebuffer(device, framebuffer, nullptr);
+
         for (auto imageView: imageViews)
             vkDestroyImageView(device, imageView, nullptr);
 
