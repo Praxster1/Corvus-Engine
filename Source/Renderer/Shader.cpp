@@ -16,14 +16,15 @@ namespace Corvus
                 .codeSize = code.size(),
                 .pCode = reinterpret_cast<const uint32_t*>(code.data())
         };
-        auto success = vkCreateShaderModule(m_Device->getDevice(), &createInfo, nullptr, &m_Module);
-        CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create shader module!")
-        CORVUS_LOG(info, "Shader module created: {}!", m_Identifier);
+
+        //auto success = vkCreateShaderModule(device->getDevice(), &createInfo, nullptr, &m_Module);
+        //CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create shader module!")
+        //CORVUS_LOG(info, "Shader module created: {}!", m_Identifier);
     }
 
     Shader::~Shader()
     {
-        vkDestroyShaderModule(m_Device->getDevice(), m_Module, nullptr);
+        //vkDestroyShaderModule(m_Device->getDevice(), m_Module, nullptr);
     }
 
     VkShaderModule Shader::getModule() const

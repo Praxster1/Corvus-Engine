@@ -8,7 +8,12 @@
 #include "Utility/Log.h"
 
 #define ENGINE_NAME "Corvus"
-#define CORVUS_VALIDATION_LAYERS not NDEBUG
+
+#ifdef NDEBUG
+static constexpr bool CORVUS_VALIDATION_LAYERS = false;
+#else
+static constexpr bool CORVUS_VALIDATION_LAYERS = false;
+#endif
 
 #define CORVUS_ASSERT(condition, ...) if(not (condition)) { CORVUS_LOG(error, __VA_ARGS__); abort(); }
 

@@ -4,7 +4,11 @@ set(CMAKE_CXX_STANDARD 23)
 project(Engine)
 add_executable(${PROJECT_NAME}
         Source/Renderer/Shader.cpp
-        Source/Renderer/Shader.h)
+        Source/Renderer/Shader.h
+        Source/Core/Instance.cpp
+        Source/Core/Instance.h
+        Source/Core/DebugMessenger.cpp
+        Source/Core/DebugMessenger.h)
 
 add_subdirectory(Source)
 add_subdirectory(External)

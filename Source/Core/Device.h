@@ -9,23 +9,20 @@
 #include "Core/Window.h"
 #include "SwapChain.h"
 #include "QueueFamilyIndices.h"
+#include "Instance.h"
+#include "DebugMessenger.h"
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-
 #include <vector>
-#include <optional>
 #include <memory>
+#include <map>
 
-namespace Corvus {
+namespace Corvus
+{
 
-    struct InstanceInfo {
-        VkInstance instance;
-        VkApplicationInfo appInfo;
-        VkInstanceCreateInfo createInfo;
-    };
-
-    class Device {
+    class Device
+    {
     public:
         explicit Device(std::shared_ptr<Window> window);
         ~Device();
@@ -33,57 +30,30 @@ namespace Corvus {
         [[nodiscard]] VkDevice getDevice() const { return m_Device; }
         [[nodiscard]] VkPhysicalDevice getPhysicalDevice() const { return m_PhysicalDevice; }
         [[nodiscard]] VkSurfaceKHR getSurface() const { return m_Surface; }
-        [[nodiscard]] VkQueue getGraphicsQueue() const { return graphicsQueue; }
-        [[nodiscard]] VkQueue getPresentQueue() const { return presentQueue; }
-        [[nodiscard]] SwapChain &getSwapChain() { return m_SwapChain; }
+        [[nodiscard]] VkQueue getQueue(const std::string &queueName) const { return m_Queues.at(queueName); }
 
     private:
         std::shared_ptr<Window> m_Window;
-        InstanceInfo m_InstanceInfo = {};
+        Instance m_Instance;
+        DebugMessenger m_DebugMessenger;
+        SwapChain m_SwapChain;
+
+        const std::vector<const char *> m_DeviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+
+        VkSurfaceKHR m_Surface = VK_NULL_HANDLE;
         VkPhysicalDevice m_PhysicalDevice = VK_NULL_HANDLE;
-        VkDevice m_Device = {};
-        VkQueue graphicsQueue{}, presentQueue = {};
-        VkSurfaceKHR m_Surface = {};
-        VkDebugUtilsMessengerEXT m_DebugMessenger = {};
-
-        SwapChain m_SwapChain = {};
-
-        const std::vector<const char *> m_ValidationLayers = {"VK_LAYER_KHRONOS_validation"};
-        const std::vector<const char *> m_DeviceExtensions = {"VK_KHR_swapchain"};
+        VkDevice m_Device = VK_NULL_HANDLE;
+        std::map<std::string, VkQueue> m_Queues;
 
     private:
-        void createInstance();
-
-        bool checkValidationLayerSupport();
-
-        void enableValidationLayers(VkInstanceCreateInfo *createInfo);
-
-        void initDebugMessenger();
-
-        static void initDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &debugCreateInfo);
+        void createWindowSurface();
 
         void pickPhysicalDevice();
-
-        bool isDeviceSuitable(VkPhysicalDevice device);
-
-        [[nodiscard]] static std::vector<const char *> getRequiredExtensions() ;
+        bool isDeviceSuitable(VkPhysicalDevice const &physicalDevice);
+        bool checkDeviceExtensionSupport(VkPhysicalDevice const &physicalDevice);
 
         void createLogicalDevice();
-
-        void createSurface();
-
-        bool checkDeviceExtensionSupport(VkPhysicalDevice device);
-
         void createImageViews();
-
-        static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-                                                            VkDebugUtilsMessageTypeFlagsEXT messageType,
-                                                            const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
-                                                            void *pUserData);
-
-        VkResult createDebugUtilsMessengerEXT(const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo);
-
-        void destroyDebugUtilsMessengerEXT();
     };
 } // Corvus
 

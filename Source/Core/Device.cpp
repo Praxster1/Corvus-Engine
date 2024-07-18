@@ -6,155 +6,54 @@
 namespace Corvus
 {
     Device::Device(std::shared_ptr<Window> window)
-            : m_Window(std::move(window))
+            : m_Window(std::move(window)),
+              m_Instance(),
+              m_DebugMessenger(&m_Instance)
     {
-        createInstance();
-#ifdef CORVUS_VALIDATION_LAYERS
-        initDebugMessenger();
-#endif
-        createSurface();
+        createWindowSurface();
         pickPhysicalDevice();
         createLogicalDevice();
+
         m_SwapChain = SwapChain(m_Device, m_PhysicalDevice, m_Surface, m_Window->getHandle());
         createImageViews();
     }
 
     Device::~Device()
     {
-#ifdef CORVUS_VALIDATION_LAYERS
-        destroyDebugUtilsMessengerEXT();
-#endif // CORVUS_VALIDATION_LAYERS
-
         m_SwapChain.destroy(m_Device);
-        vkDestroySurfaceKHR(m_InstanceInfo.instance, m_Surface, nullptr);
         vkDestroyDevice(m_Device, nullptr);
-        vkDestroyInstance(m_InstanceInfo.instance, nullptr);
+        vkDestroySurfaceKHR(m_Instance.getInstance(), m_Surface, nullptr);
     }
 
-    bool Device::checkValidationLayerSupport()
+    void Device::createWindowSurface()
     {
-#ifdef CORVUS_VALIDATION_LAYERS
+        auto success = glfwCreateWindowSurface(m_Instance.getInstance(), m_Window->getHandle(), nullptr, &m_Surface);
+        CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create window surface!")
+        CORVUS_LOG(info, "Window surface created successfully!");
+    }
 
-        uint32_t layerCount;
-        vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+    void Device::pickPhysicalDevice()
+    {
+        uint32_t deviceCount = 0;
+        vkEnumeratePhysicalDevices(m_Instance.getInstance(), &deviceCount, nullptr);
+        CORVUS_ASSERT(deviceCount != 0, "Failed to find GPUs with Vulkan support!")
 
-        // Write all available layers to a vector
-        std::vector<VkLayerProperties> availableLayers(layerCount);
-        vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+        std::vector<VkPhysicalDevice> physicalDevices(deviceCount);
+        vkEnumeratePhysicalDevices(m_Instance.getInstance(), &deviceCount, physicalDevices.data());
 
-        for (std::string layerName: m_ValidationLayers)
+        for (const auto &pd: physicalDevices)
         {
-            bool layerFound = false;
-            for (const auto &layerProperties: availableLayers)
+            if (isDeviceSuitable(pd))
             {
-                if (layerName == layerProperties.layerName)
-                {
-                    layerFound = true;
-                    break;
-                }
-            }
-            if (not layerFound)
-            {
-                return false;
+                CORVUS_LOG(info, "Found suitable GPU");
+                m_PhysicalDevice = pd;
+                break;
             }
         }
-#endif // CORVUS_VALIDATION_LAYERS
-        return true;
+        CORVUS_ASSERT(m_PhysicalDevice != VK_NULL_HANDLE, "Failed to find a suitable GPU!")
     }
 
-    void Device::enableValidationLayers(VkInstanceCreateInfo *createInfo)
-    {
-#ifdef CORVUS_VALIDATION_LAYERS
-        CORVUS_ASSERT(checkValidationLayerSupport(),
-                      "Validation layers requested, but not available!")
-        createInfo->enabledLayerCount = static_cast<uint32_t>(m_ValidationLayers.size());
-        createInfo->ppEnabledLayerNames = m_ValidationLayers.data();
-#else
-        createInfo->enabledLayerCount = 0;
-        createInfo->pNext = nullptr;
-#endif // CORVUS_VALIDATION_LAYERS
-    }
-
-
-    std::vector<const char *> Device::getRequiredExtensions()
-    {
-        uint32_t glfwExtensionCount = 0;
-        const char **glfwExtensions;
-        glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-        std::vector<const char *> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
-
-#ifdef CORVUS_VALIDATION_LAYERS
-        extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-#endif
-        return extensions;
-    }
-
-    VkBool32 VKAPI_CALL Device::debugCallback(
-            [[maybe_unused]] VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-            [[maybe_unused]] VkDebugUtilsMessageTypeFlagsEXT messageType,
-            [[maybe_unused]] const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
-            [[maybe_unused]] void *pUserData)
-    {
-
-        CORVUS_LOG(error, "Validation Layer: {}", pCallbackData->pMessage);
-        return VK_FALSE;
-    }
-
-    void Device::initDebugMessenger()
-    {
-        enableValidationLayers(&m_InstanceInfo.createInfo);
-        vkGetInstanceProcAddr(m_InstanceInfo.instance, "vkCreateDebugUtilsMessengerEXT");
-
-        VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
-        initDebugMessengerCreateInfo(debugCreateInfo);
-        m_InstanceInfo.createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *) &debugCreateInfo;
-
-        auto createDebugMsg = createDebugUtilsMessengerEXT(&debugCreateInfo);
-        CORVUS_ASSERT(createDebugMsg == VK_SUCCESS, "Failed to set up debug messenger!")
-        CORVUS_LOG(info, "Debug messenger set up successfully!");
-    }
-
-    VkResult
-    Device::createDebugUtilsMessengerEXT(const VkDebugUtilsMessengerCreateInfoEXT *pCreateInfo)
-    {
-        auto createFunc = (PFN_vkCreateDebugUtilsMessengerEXT)
-                vkGetInstanceProcAddr(m_InstanceInfo.instance, "vkCreateDebugUtilsMessengerEXT");
-        if (createFunc)
-        {
-            return createFunc(m_InstanceInfo.instance, pCreateInfo, nullptr, &m_DebugMessenger);
-        } else
-        {
-            return VK_ERROR_EXTENSION_NOT_PRESENT;
-        }
-    }
-
-    void Device::destroyDebugUtilsMessengerEXT()
-    {
-        auto destroyFunc = (PFN_vkDestroyDebugUtilsMessengerEXT)
-                vkGetInstanceProcAddr(m_InstanceInfo.instance, "vkDestroyDebugUtilsMessengerEXT");
-        if (destroyFunc)
-        {
-            destroyFunc(m_InstanceInfo.instance, m_DebugMessenger, nullptr);
-        }
-        CORVUS_ASSERT(m_DebugMessenger != VK_NULL_HANDLE, "Debug messenger not destroyed!")
-        CORVUS_LOG(info, "Debug messenger destroyed successfully!");
-    }
-
-    void Device::initDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &debugCreateInfo)
-    {
-        debugCreateInfo = {
-                .sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
-                .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
-                                   VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-                                   VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT,
-                .messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
-                               VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-                               VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
-                .pfnUserCallback = debugCallback
-        };
-    }
-
-    bool Device::isDeviceSuitable(VkPhysicalDevice physicalDevice)
+    bool Device::isDeviceSuitable(VkPhysicalDevice const &physicalDevice)
     {
         QueueFamilyIndices indices = QueueFamilyIndices::findQueueFamilies(physicalDevice, m_Surface);
         bool deviceExtensionsSupported = checkDeviceExtensionSupport(physicalDevice);
@@ -169,33 +68,27 @@ namespace Corvus
         return indices.isComplete() and deviceExtensionsSupported and swapChainAdequate;
     }
 
-    void Device::pickPhysicalDevice()
+    bool Device::checkDeviceExtensionSupport(VkPhysicalDevice const &physicalDevice)
     {
-        uint32_t deviceCount = 0;
-        vkEnumeratePhysicalDevices(m_InstanceInfo.instance, &deviceCount, nullptr);
-        CORVUS_ASSERT(deviceCount != 0, "Failed to find GPUs with Vulkan support!")
+        uint32_t extensionCount;
+        vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &extensionCount, nullptr);
 
-        std::vector<VkPhysicalDevice> physicalDevices(deviceCount);
-        vkEnumeratePhysicalDevices(m_InstanceInfo.instance, &deviceCount, physicalDevices.data());
+        std::vector<VkExtensionProperties> availableExtensions(extensionCount);
 
-        // Simply pick the first suitable device
-        for (const auto &device: physicalDevices)
-        {
-            if (isDeviceSuitable(device))
-            {
-                CORVUS_LOG(info, "Found suitable GPU");
-                m_PhysicalDevice = device;
-                break;
-            }
-        }
-        CORVUS_ASSERT(m_PhysicalDevice != VK_NULL_HANDLE, "Failed to find a suitable GPU!")
-        CORVUS_LOG(info, "Physical device found successfully!");
+        vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &extensionCount, availableExtensions.data());
+        std::set<std::string> requiredExtensions(m_DeviceExtensions.begin(), m_DeviceExtensions.end());
+
+        for (const auto &extension: availableExtensions)
+            requiredExtensions.erase(extension.extensionName); // Remove supported extensions from requiredExtensions
+
+        return requiredExtensions.empty(); // If empty, all required extensions are supported
     }
 
     void Device::createLogicalDevice()
     {
         QueueFamilyIndices indices = QueueFamilyIndices::findQueueFamilies(m_PhysicalDevice, m_Surface);
         std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+
         std::set<uint32_t> uniqueQueueFamilies = {
                 indices.graphicsFamily.value(),
                 indices.presentFamily.value()
@@ -227,83 +120,42 @@ namespace Corvus
         CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create logical device!")
         CORVUS_LOG(info, "Logical device created successfully!");
 
-        vkGetDeviceQueue(m_Device, indices.graphicsFamily.value(), 0, &graphicsQueue);
-        vkGetDeviceQueue(m_Device, indices.presentFamily.value(), 0, &presentQueue);
-    }
-
-    void Device::createSurface()
-    {
-        auto success = glfwCreateWindowSurface(m_InstanceInfo.instance, m_Window->getHandle(), nullptr, &m_Surface);
-        CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create window surface!")
-        CORVUS_LOG(info, "Window surface created successfully!");
-    }
-
-    bool Device::checkDeviceExtensionSupport(VkPhysicalDevice device)
-    {
-        uint32_t extensionCount;
-        vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
-
-        std::vector<VkExtensionProperties> availableExtensions(extensionCount);
-        vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
-        std::set<std::string> requiredExtensions(m_DeviceExtensions.begin(), m_DeviceExtensions.end());
-
-        for (const auto &extension: availableExtensions)
-        {
-            requiredExtensions.erase(extension.extensionName); // Remove supported extensions from requiredExtensions
-        }
-        return requiredExtensions.empty(); // If empty, all required extensions are supported
+        vkGetDeviceQueue(m_Device, indices.graphicsFamily.value(), 0, &m_Queues["graphics"]);
+        vkGetDeviceQueue(m_Device, indices.presentFamily.value(), 0, &m_Queues["present"]);
     }
 
     void Device::createImageViews()
     {
-        m_SwapChain.imageViews.resize(m_SwapChain.images.size());
-        for (size_t i = 0; i < m_SwapChain.images.size(); i++)
+        auto &images = m_SwapChain.getImages();
+        auto &imageViews = m_SwapChain.getImageViews();
+        imageViews.resize(images.size());
+
+        for (size_t i = 0; i < m_SwapChain.getImages().size(); i++)
         {
-            VkImageViewCreateInfo createInfo{};
-            createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-            createInfo.image = m_SwapChain.images[i];
+            VkImageViewCreateInfo createInfo = {
+                    .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+                    .image = m_SwapChain.getImages()[i],
+                    .viewType = VK_IMAGE_VIEW_TYPE_2D,
+                    .format = m_SwapChain.getImageFormat(),
+                    .components = {
+                            .r = VK_COMPONENT_SWIZZLE_IDENTITY,
+                            .g = VK_COMPONENT_SWIZZLE_IDENTITY,
+                            .b = VK_COMPONENT_SWIZZLE_IDENTITY,
+                            .a = VK_COMPONENT_SWIZZLE_IDENTITY
+                    },
+                    .subresourceRange = {
+                            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                            .baseMipLevel = 0,
+                            .levelCount = 1,
+                            .baseArrayLayer = 0,
+                            .layerCount = 1
+                    }
+            };
 
-            createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-            createInfo.format = m_SwapChain.imageFormat;
-            createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
-            createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
-            createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
-            createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
-
-            createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-            createInfo.subresourceRange.baseMipLevel = 0;
-            createInfo.subresourceRange.levelCount = 1;
-            createInfo.subresourceRange.baseArrayLayer = 0;
-            createInfo.subresourceRange.layerCount = 1;
-
-            auto success = vkCreateImageView(m_Device, &createInfo, nullptr, &m_SwapChain.imageViews[i]);
+            auto success = vkCreateImageView(m_Device, &createInfo, nullptr, &m_SwapChain.getImageViews()[i]);
             CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create image views!")
         }
         CORVUS_LOG(info, "Image views created successfully!");
-    }
-
-    void Device::createInstance()
-    {
-        auto glfwExtensions = getRequiredExtensions();
-        m_InstanceInfo.appInfo = {
-                .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
-                .pApplicationName = "Hello Triangle",
-                .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
-                .pEngineName = ENGINE_NAME,
-                .engineVersion = VK_MAKE_VERSION(1, 0, 0),
-                .apiVersion = VK_API_VERSION_1_0,
-        };
-
-        m_InstanceInfo.createInfo = {
-                .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-                .pApplicationInfo = &m_InstanceInfo.appInfo,
-                .enabledLayerCount = 0,
-                .enabledExtensionCount = static_cast<uint32_t>(glfwExtensions.size()),
-                .ppEnabledExtensionNames = glfwExtensions.data(),
-        };
-
-        auto success = vkCreateInstance(&m_InstanceInfo.createInfo, nullptr, &m_InstanceInfo.instance);
-        CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create Vulkan instance!")
     }
 
 } // Corvus

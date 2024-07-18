@@ -13,6 +13,7 @@ namespace Corvus
                 m_VertexShader("Vertex", readFile(vertexShader), m_Device),
                 m_FragmentShader("Fragment", readFile(fragmentShader), m_Device)
     {
+        createGraphicsPipeline();
     }
 
     Pipeline::~Pipeline() = default;
@@ -36,31 +37,7 @@ namespace Corvus
 
     void Pipeline::createGraphicsPipeline()
     {
-        VkPipelineShaderStageCreateInfo vertShaderStageInfo{
-                .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-                .stage = VK_SHADER_STAGE_VERTEX_BIT,
-                .module = m_VertexShader.getModule(),
-                .pName = "main"
-        };
 
-        VkPipelineShaderStageCreateInfo fragShaderStageInfo{
-                .sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
-                .stage = VK_SHADER_STAGE_FRAGMENT_BIT,
-                .module = m_FragmentShader.getModule(),
-                .pName = "main"
-        };
-
-        VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
-
-        std::vector<VkDynamicState> dynamicStates = {
-                VK_DYNAMIC_STATE_VIEWPORT,
-                VK_DYNAMIC_STATE_SCISSOR
-        };
-
-        VkPipelineDynamicStateCreateInfo dynamicState{};
-        dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-        dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
-        dynamicState.pDynamicStates = dynamicStates.data();
     }
 
 

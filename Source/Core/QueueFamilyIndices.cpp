@@ -36,4 +36,5 @@ QueueFamilyIndices QueueFamilyIndices::findQueueFamilies(VkPhysicalDevice device
         }
         i++;
     }
-    return indices;}
+    return indices;
+}

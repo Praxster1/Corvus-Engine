@@ -23,6 +23,24 @@ namespace Corvus
 
     struct SwapChain
     {
+    public:
+        SwapChain() = default;
+
+        ~SwapChain() = default;
+
+        explicit SwapChain(VkDevice device, VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, GLFWwindow *window);
+
+        void destroy(VkDevice device) const;
+        static SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
+
+        [[nodiscard]] VkSwapchainKHR getHandle() const { return handle; }
+        [[nodiscard]] VkFormat getImageFormat() const { return imageFormat; }
+        [[nodiscard]] VkExtent2D getExtent() const { return extent; }
+        [[nodiscard]] const std::vector<VkImage> &getImages() const { return images; }
+        [[nodiscard]] std::vector<VkImageView> &getImageViews() { return imageViews; }
+        [[nodiscard]] const SwapChainSupportDetails &getSupportDetails() const { return supportDetails; }
+
+    private:
         VkSwapchainKHR handle{};
         VkFormat imageFormat{};
         VkExtent2D extent{};
@@ -30,21 +48,9 @@ namespace Corvus
         std::vector<VkImageView> imageViews{};
         SwapChainSupportDetails supportDetails{};
 
-        SwapChain() = default;
-
-        explicit SwapChain(VkDevice device, VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, GLFWwindow *window);
-
-        ~SwapChain() = default;
-
-        void destroy(VkDevice device) const;
-
         VkSurfaceFormatKHR chooseSwapSurfaceFormat();
-
         VkPresentModeKHR chooseSwapPresentMode();
-
         VkExtent2D chooseSwapExtent(GLFWwindow *window);
-
-        static SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
     };
 
 } // Corvus

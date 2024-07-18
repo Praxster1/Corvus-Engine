@@ -12,7 +12,7 @@ Corvus::Engine::Engine() {
 void Corvus::Engine::run() {
     CORVUS_LOG(info, "Starting engine loop");
 
-    while(not m_Window->shouldClose()) {
+    while(not m_Window->shouldClose() and glfwGetKey(m_Window->getHandle(), GLFW_KEY_ESCAPE) != GLFW_PRESS){
         m_Window->update();
     }
 }
