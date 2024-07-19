@@ -47,7 +47,7 @@ namespace Corvus
                 .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
                 .waitSemaphoreCount = 1,
                 .pWaitSemaphores = waitSemaphores,
-                .pWaitDstStageMask = nullptr,
+                .pWaitDstStageMask = waitStages,
                 .commandBufferCount = 1,
                 .pCommandBuffers = &m_CommandBuffer,
                 .signalSemaphoreCount = 1,
@@ -93,7 +93,7 @@ namespace Corvus
                         .offset = {0, 0},
                         .extent = swapChain.getExtent()
                 },
-                .clearValueCount = 0,
+                .clearValueCount = 1,
                 .pClearValues = &clearColor,
         };
 

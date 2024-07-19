@@ -22,6 +22,7 @@ void Corvus::Engine::run()
         m_Renderer->draw();
         m_Window->update();
     }
+    vkDeviceWaitIdle(m_Device->getDevice());
 }
 
 Corvus::Engine::~Engine() = default;

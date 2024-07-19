@@ -23,6 +23,8 @@ namespace Corvus
 
     Device::~Device()
     {
+        vkDestroyCommandPool(m_Device, m_CommandPool, nullptr);
+
         vkDestroyRenderPass(m_Device, m_RenderPass, nullptr);
         m_SwapChain.destroy(m_Device);
         vkDestroyDevice(m_Device, nullptr);
@@ -244,7 +246,7 @@ namespace Corvus
 
         VkCommandPoolCreateInfo poolInfo = {
                 .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
-                .flags = 0,
+                .flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
                 .queueFamilyIndex = queueFamilyIndices.graphicsFamily.value(),
         };
 
