@@ -19,7 +19,6 @@ namespace Corvus
         ~Renderer();
 
         void draw();
-
     private:
         std::shared_ptr<Device> m_Device;
         std::shared_ptr<Window> m_Window;
@@ -38,16 +37,16 @@ namespace Corvus
         void recordCommandBuffers(VkCommandBuffer commandBuffer, uint32_t imageIndex);
         void beginCommandBuffer();
         void beginRenderPass(VkCommandBuffer commandBuffer, VkFramebuffer &framebuffer, VkExtent2D extent);
-        void bindPipeline(VkCommandBuffer commandBuffer, VkPipeline pipeline);
+        static void bindPipeline(VkCommandBuffer commandBuffer, VkPipeline pipeline);
         static void setViewport(VkCommandBuffer commandBuffer, VkExtent2D extent);
         static void setScissor(VkCommandBuffer commandBuffer, VkExtent2D extent);
-        void cleanupFrame(VkCommandBuffer commandBuffer);
+        static void cleanupFrame(VkCommandBuffer commandBuffer);
 
         // Draw pipeline
         void synchronize(VkDevice device);
         uint32_t acquireNextImage(VkDevice device, VkSwapchainKHR swapChain);
         void prepareCommandBuffer(uint32_t imageIndex);
-        void submit();
+        void submitGraphicsQueue();
         void presentImage(VkSwapchainKHR swapChain, uint32_t imageIndex);
     };
 
