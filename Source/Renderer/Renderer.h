@@ -32,10 +32,23 @@ namespace Corvus
 
     private:
         void createCommandBuffers();
-        void recordCommandBuffers(VkCommandBuffer commandBuffer, uint32_t imageIndex);
         void createSyncObjects();
 
+        // Record pipeline
+        void recordCommandBuffers(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+        void beginCommandBuffer();
+        void beginRenderPass(VkCommandBuffer commandBuffer, VkFramebuffer &framebuffer, VkExtent2D extent);
+        void bindPipeline(VkCommandBuffer commandBuffer, VkPipeline pipeline);
+        static void setViewport(VkCommandBuffer commandBuffer, VkExtent2D extent);
+        static void setScissor(VkCommandBuffer commandBuffer, VkExtent2D extent);
+        void cleanupFrame(VkCommandBuffer commandBuffer);
 
+        // Draw pipeline
+        void synchronize(VkDevice device);
+        uint32_t acquireNextImage(VkDevice device, VkSwapchainKHR swapChain);
+        void prepareCommandBuffer(uint32_t imageIndex);
+        void submit();
+        void presentImage(VkSwapchainKHR swapChain, uint32_t imageIndex);
     };
 
 }
