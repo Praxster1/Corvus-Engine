@@ -5,6 +5,7 @@
 #include "Window.h"
 #include "Device.h"
 #include "Renderer/Pipeline.h"
+#include "Renderer/Renderer.h"
 
 namespace Corvus {
 
@@ -12,7 +13,8 @@ namespace Corvus {
     private:
         std::shared_ptr<Window> m_Window;
         std::shared_ptr<Device> m_Device;
-        std::unique_ptr<Pipeline> m_Pipeline;
+        std::shared_ptr<Pipeline> m_Pipeline;
+        std::unique_ptr<Renderer> m_Renderer;
 
     public:
         Engine();

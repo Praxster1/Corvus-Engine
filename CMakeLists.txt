@@ -8,7 +8,9 @@ add_executable(${PROJECT_NAME}
         Source/Core/Instance.cpp
         Source/Core/Instance.h
         Source/Core/DebugMessenger.cpp
-        Source/Core/DebugMessenger.h)
+        Source/Core/DebugMessenger.h
+        Source/Renderer/Renderer.cpp
+        Source/Renderer/Renderer.h)
 
 add_subdirectory(Source)
 add_subdirectory(External)

@@ -26,6 +26,7 @@ namespace Corvus
     public:
         explicit Device(std::shared_ptr<Window> window);
         ~Device();
+        Device(const Device &) = delete;
 
         [[nodiscard]] VkDevice getDevice() const { return m_Device; }
         [[nodiscard]] VkPhysicalDevice getPhysicalDevice() const { return m_PhysicalDevice; }
@@ -34,7 +35,6 @@ namespace Corvus
         [[nodiscard]] SwapChain &getSwapChain() { return m_SwapChain; }
         [[nodiscard]] VkRenderPass getRenderPass() const { return m_RenderPass; }
         [[nodiscard]] VkCommandPool getCommandPool() const { return m_CommandPool; }
-        [[nodiscard]] VkCommandBuffer getCommandBuffers() const { return m_CommandBuffers; }
 
     private:
         std::shared_ptr<Window> m_Window;
@@ -49,7 +49,6 @@ namespace Corvus
         VkDevice m_Device = VK_NULL_HANDLE;
         VkRenderPass m_RenderPass = VK_NULL_HANDLE;
         VkCommandPool m_CommandPool = VK_NULL_HANDLE;
-        VkCommandBuffer m_CommandBuffers = VK_NULL_HANDLE;
         std::map<std::string, VkQueue> m_Queues;
 
     private:
@@ -65,7 +64,6 @@ namespace Corvus
         void createRenderPass();
         void createFramebuffers();
         void createCommandPool();
-        void createCommandBuffers();
     };
 } // Corvus
 

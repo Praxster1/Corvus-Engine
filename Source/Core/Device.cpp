@@ -19,7 +19,6 @@ namespace Corvus
         createRenderPass(); // TODO: Maybe move into Renderer Pipeline class (???)
         createFramebuffers();
         createCommandPool();
-        createCommandBuffers();
     }
 
     Device::~Device()
@@ -199,11 +198,12 @@ namespace Corvus
         CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create render pass!")
         CORVUS_LOG(info, "Render pass created successfully!");
     }
+
     void Device::createFramebuffers()
     {
-        auto &imageViews = m_SwapChain.getImageViews();
-        auto swapChainExtent = m_SwapChain.getExtent();
-        auto framebuffers = m_SwapChain.getFramebuffers();
+        std::vector<VkImageView> &imageViews = m_SwapChain.getImageViews();
+        VkExtent2D swapChainExtent = m_SwapChain.getExtent();
+        std::vector<VkFramebuffer> &framebuffers = m_SwapChain.getFramebuffers();
 
         framebuffers.resize(imageViews.size());
 
@@ -224,7 +224,7 @@ namespace Corvus
             auto success = vkCreateFramebuffer(m_Device, &framebufferInfo, nullptr, &framebuffers[i]);
             CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create framebuffer!")
         }
-        CORVUS_LOG(info, "Framebuffers created successfully!");
+        CORVUS_LOG(info, "Framebuffers created successfully! {}", framebuffers.size());
     }
 
     void Device::createCommandPool()
@@ -240,20 +240,6 @@ namespace Corvus
         auto success = vkCreateCommandPool(m_Device, &poolInfo, nullptr, &m_CommandPool);
         CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create command pool!")
         CORVUS_LOG(info, "Command pool created successfully!");
-    }
-
-    void Device::createCommandBuffers()
-    {
-        VkCommandBufferAllocateInfo allocInfo = {
-                .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-                .commandPool = m_CommandPool,
-                .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-                .commandBufferCount = 1,
-        };
-
-        auto success = vkAllocateCommandBuffers(m_Device, &allocInfo, &m_CommandBuffers);
-        CORVUS_ASSERT(success == VK_SUCCESS, "Failed to allocate command buffers!")
-        CORVUS_LOG(info, "Command buffers allocated successfully!");
     }
 
 } // Corvus

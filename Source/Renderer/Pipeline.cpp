@@ -49,6 +49,12 @@ namespace Corvus
                 VK_DYNAMIC_STATE_SCISSOR
         };
 
+        VkPipelineDynamicStateCreateInfo dynamicState = {
+                .sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
+                .dynamicStateCount = static_cast<uint32_t>(dynamicStates.size()),
+                .pDynamicStates = dynamicStates.data()
+        };
+
         VkPipelineVertexInputStateCreateInfo vertexInputInfo = {
                 .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
                 .vertexBindingDescriptionCount = 0,
@@ -63,27 +69,10 @@ namespace Corvus
                 .primitiveRestartEnable = VK_FALSE
         };
 
-        auto extend = m_Device->getSwapChain().getExtent();
-        VkViewport viewport = {
-                .x = 0.0f,
-                .y = 0.0f,
-                .width = static_cast<float>(extend.width),
-                .height = static_cast<float>(extend.height),
-                .minDepth = 0.0f,
-                .maxDepth = 1.0f
-        };
-
-        VkRect2D scissor = {
-                .offset = {0, 0},
-                .extent = extend
-        };
-
         VkPipelineViewportStateCreateInfo viewportState = {
                 .sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
                 .viewportCount = 1,
-                .pViewports = &viewport,
                 .scissorCount = 1,
-                .pScissors = &scissor
         };
 
         VkPipelineRasterizationStateCreateInfo rasterizer = {
@@ -164,11 +153,11 @@ namespace Corvus
                 .pStages = shaderStages,
                 .pVertexInputState = &vertexInputInfo,
                 .pInputAssemblyState = &inputAssembly,
-                .pViewportState = &viewportState,
+                .pViewportState = &viewportState, // viewport and scissor are dynamic
                 .pRasterizationState = &rasterizer,
                 .pMultisampleState = &multisampling,
                 .pColorBlendState = &colorBlending,
-                .pDynamicState = nullptr,
+                .pDynamicState = &dynamicState,
                 .layout = m_PipelineLayout,
                 .renderPass = m_Device->getRenderPass(),
                 .subpass = 0,
