@@ -26,10 +26,14 @@ namespace Corvus
         std::shared_ptr<Pipeline> m_Pipeline;
 
         VkCommandBuffer m_CommandBuffer = VK_NULL_HANDLE;
+        VkSemaphore m_ImageAvailableSemaphore = VK_NULL_HANDLE;
+        VkSemaphore m_RenderFinishedSemaphore = VK_NULL_HANDLE;
+        VkFence m_InFlightFence = VK_NULL_HANDLE;
 
     private:
         void createCommandBuffers();
         void recordCommandBuffers(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+        void createSyncObjects();
 
 
     };
