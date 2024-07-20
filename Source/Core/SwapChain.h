@@ -30,7 +30,13 @@ namespace Corvus
 
         explicit SwapChain(VkDevice device, VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, GLFWwindow *window);
 
+        void create(VkDevice device, VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, GLFWwindow *window);
         void destroy(VkDevice device) const;
+
+        void recreate(VkDevice device, VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, GLFWwindow *window, VkRenderPass renderPass);
+        void createImageViews(VkDevice device);
+        void createFramebuffers(VkDevice device, VkRenderPass renderPass);
+
         static SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
 
         [[nodiscard]] VkSwapchainKHR getHandle() const { return handle; }
@@ -52,7 +58,7 @@ namespace Corvus
 
         VkSurfaceFormatKHR chooseSwapSurfaceFormat();
         VkPresentModeKHR chooseSwapPresentMode();
-        VkExtent2D chooseSwapExtent(GLFWwindow *window);
+        VkExtent2D chooseSwapExtent(GLFWwindow *window) const;
     };
 
 } // Corvus

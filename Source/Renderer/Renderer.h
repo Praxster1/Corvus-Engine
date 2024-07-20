@@ -24,14 +24,18 @@ namespace Corvus
         std::shared_ptr<Window> m_Window;
         std::shared_ptr<Pipeline> m_Pipeline;
 
-        VkCommandBuffer m_CommandBuffer = VK_NULL_HANDLE;
-        VkSemaphore m_ImageAvailableSemaphore = VK_NULL_HANDLE;
-        VkSemaphore m_RenderFinishedSemaphore = VK_NULL_HANDLE;
-        VkFence m_InFlightFence = VK_NULL_HANDLE;
+        std::vector<VkCommandBuffer> m_CommandBuffers;
+        std::vector<VkSemaphore> m_ImageAvailableSemaphores;
+        std::vector<VkSemaphore> m_RenderFinishedSemaphores;
+        std::vector<VkFence> m_InFlightFences;
+
+        const uint32_t MAX_FRAMES_IN_FLIGHT = 2;
+        uint32_t m_CurrentFrame = 0;
 
     private:
         void createCommandBuffers();
         void createSyncObjects();
+        void updateCurrentFrame();
 
         // Record pipeline
         void recordCommandBuffers(VkCommandBuffer commandBuffer, uint32_t imageIndex);
@@ -44,13 +48,11 @@ namespace Corvus
 
         // Draw pipeline
         void synchronize(VkDevice device);
-        uint32_t acquireNextImage(VkDevice device, VkSwapchainKHR swapChain);
+        uint32_t acquireNextImage(VkDevice device, SwapChain& swapChain);
         void prepareCommandBuffer(uint32_t imageIndex);
         void submitGraphicsQueue();
         void presentImage(VkSwapchainKHR swapChain, uint32_t imageIndex);
     };
-
 }
-
 
 #endif //ENGINE_RENDERER_H

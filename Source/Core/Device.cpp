@@ -16,7 +16,7 @@ namespace Corvus
 
         m_SwapChain = SwapChain(m_Device, m_PhysicalDevice, m_Surface, m_Window->getHandle());
         createImageViews();
-        createRenderPass(); // TODO: Maybe move into Renderer Pipeline class (???)
+        createRenderPass();
         createFramebuffers();
         createCommandPool();
     }
@@ -132,36 +132,7 @@ namespace Corvus
 
     void Device::createImageViews()
     {
-        auto &images = m_SwapChain.getImages();
-        auto &imageViews = m_SwapChain.getImageViews();
-        imageViews.resize(images.size());
-
-        for (size_t i = 0; i < m_SwapChain.getImages().size(); i++)
-        {
-            VkImageViewCreateInfo createInfo = {
-                    .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
-                    .image = m_SwapChain.getImages()[i],
-                    .viewType = VK_IMAGE_VIEW_TYPE_2D,
-                    .format = m_SwapChain.getImageFormat(),
-                    .components = {
-                            .r = VK_COMPONENT_SWIZZLE_IDENTITY,
-                            .g = VK_COMPONENT_SWIZZLE_IDENTITY,
-                            .b = VK_COMPONENT_SWIZZLE_IDENTITY,
-                            .a = VK_COMPONENT_SWIZZLE_IDENTITY
-                    },
-                    .subresourceRange = {
-                            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-                            .baseMipLevel = 0,
-                            .levelCount = 1,
-                            .baseArrayLayer = 0,
-                            .layerCount = 1
-                    }
-            };
-
-            auto success = vkCreateImageView(m_Device, &createInfo, nullptr, &m_SwapChain.getImageViews()[i]);
-            CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create image views!")
-        }
-        CORVUS_LOG(info, "Image views created successfully!");
+        m_SwapChain.createImageViews(m_Device);
     }
 
     void Device::createRenderPass()
@@ -214,30 +185,7 @@ namespace Corvus
 
     void Device::createFramebuffers()
     {
-        std::vector<VkImageView> &imageViews = m_SwapChain.getImageViews();
-        VkExtent2D swapChainExtent = m_SwapChain.getExtent();
-        std::vector<VkFramebuffer> &framebuffers = m_SwapChain.getFramebuffers();
-
-        framebuffers.resize(imageViews.size());
-
-        for (size_t i = 0; i < imageViews.size(); i++)
-        {
-            VkImageView attachments[] = {imageViews[i]};
-
-            VkFramebufferCreateInfo framebufferInfo = {
-                    .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
-                    .renderPass = m_RenderPass,
-                    .attachmentCount = 1,
-                    .pAttachments = attachments,
-                    .width = swapChainExtent.width,
-                    .height = swapChainExtent.height,
-                    .layers = 1
-            };
-
-            auto success = vkCreateFramebuffer(m_Device, &framebufferInfo, nullptr, &framebuffers[i]);
-            CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create framebuffer!")
-        }
-        CORVUS_LOG(info, "Framebuffers created successfully! {}", framebuffers.size());
+        m_SwapChain.createFramebuffers(m_Device, m_RenderPass);
     }
 
     void Device::createCommandPool()

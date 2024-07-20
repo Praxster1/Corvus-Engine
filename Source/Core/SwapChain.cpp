@@ -12,6 +12,146 @@ namespace Corvus
 
     SwapChain::SwapChain(VkDevice device, VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, GLFWwindow *window)
     {
+        create(device, physicalDevice, surface, window);
+    }
+
+    VkSurfaceFormatKHR SwapChain::chooseSwapSurfaceFormat()
+    {
+        for (const auto &format: supportDetails.formats)
+        {
+            // Prefer 32-bit BGRA format with sRGB color space
+            if (format.format == VK_FORMAT_B8G8R8A8_SRGB and format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+            {
+                return format;
+            }
+        }
+        // if preferred format not found, return the first available format
+        // Alternatively rank the formats and return highest ranked format
+        return supportDetails.formats[0];
+    }
+
+    VkPresentModeKHR SwapChain::chooseSwapPresentMode()
+    {
+        for (const auto &presentMode: supportDetails.presentModes)
+        {
+            if (presentMode == VK_PRESENT_MODE_MAILBOX_KHR)
+            { // Prefer Triple buffering
+                return presentMode;
+            }
+        }
+        return VK_PRESENT_MODE_FIFO_KHR;
+    }
+
+    VkExtent2D SwapChain::chooseSwapExtent(GLFWwindow *window) const
+    {
+        if (supportDetails.capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
+        {
+            return supportDetails.capabilities.currentExtent;
+        } else
+        {
+            int width, height;
+            glfwGetFramebufferSize(window, &width, &height);
+
+            VkExtent2D actualExtent = {
+                    static_cast<uint32_t>(width),
+                    static_cast<uint32_t>(height)
+            };
+
+            actualExtent.width = std::clamp(actualExtent.width, supportDetails.capabilities.minImageExtent.width,
+                                            supportDetails.capabilities.maxImageExtent.width);
+            actualExtent.height = std::clamp(actualExtent.height, supportDetails.capabilities.minImageExtent.height,
+                                             supportDetails.capabilities.maxImageExtent.height);
+
+            return actualExtent;
+        }
+    }
+
+    SwapChainSupportDetails SwapChain::querySwapChainSupport(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
+    {
+        SwapChainSupportDetails details;
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, &details.capabilities);
+
+        uint32_t formatCount;
+        vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount, nullptr);
+
+        if (formatCount != 0)
+        {
+            details.formats.resize(formatCount);
+            vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount, details.formats.data());
+        }
+
+        return details;
+    }
+
+    void SwapChain::destroy(VkDevice device) const
+    {
+        for (auto framebuffer: framebuffers)
+            vkDestroyFramebuffer(device, framebuffer, nullptr);
+
+        for (auto imageView: imageViews)
+            vkDestroyImageView(device, imageView, nullptr);
+
+        vkDestroySwapchainKHR(device, handle, nullptr);
+    }
+
+    void SwapChain::createImageViews(VkDevice device)
+    {
+        imageViews.resize(images.size());
+
+        for (size_t i = 0; i < images.size(); i++)
+        {
+            VkImageViewCreateInfo createInfo = {
+                    .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+                    .image = images[i],
+                    .viewType = VK_IMAGE_VIEW_TYPE_2D,
+                    .format = imageFormat,
+                    .components = {
+                            .r = VK_COMPONENT_SWIZZLE_IDENTITY,
+                            .g = VK_COMPONENT_SWIZZLE_IDENTITY,
+                            .b = VK_COMPONENT_SWIZZLE_IDENTITY,
+                            .a = VK_COMPONENT_SWIZZLE_IDENTITY
+                    },
+                    .subresourceRange = {
+                            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                            .baseMipLevel = 0,
+                            .levelCount = 1,
+                            .baseArrayLayer = 0,
+                            .layerCount = 1
+                    }
+            };
+
+            auto success = vkCreateImageView(device, &createInfo, nullptr, &imageViews[i]);
+            CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create image views!")
+        }
+        CORVUS_LOG(info, "Image views created successfully!");
+    }
+
+    void SwapChain::createFramebuffers(VkDevice device, VkRenderPass renderPass)
+    {
+        framebuffers.resize(imageViews.size());
+
+        for (size_t i = 0; i < imageViews.size(); i++)
+        {
+            VkImageView attachments[] = {imageViews[i]};
+
+            VkFramebufferCreateInfo framebufferInfo = {
+                    .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+                    .renderPass = renderPass,
+                    .attachmentCount = 1,
+                    .pAttachments = attachments,
+                    .width = extent.width,
+                    .height = extent.height,
+                    .layers = 1
+            };
+
+            auto success = vkCreateFramebuffer(device, &framebufferInfo, nullptr, &framebuffers[i]);
+            CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create framebuffer!")
+        }
+        CORVUS_LOG(info, "Framebuffers created successfully! {}", framebuffers.size());
+    }
+
+    void SwapChain::create(VkDevice device, VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, GLFWwindow *window)
+    {
         supportDetails = querySwapChainSupport(physicalDevice, surface);
         extent = chooseSwapExtent(window);
         VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat();
@@ -62,85 +202,17 @@ namespace Corvus
         imageFormat = surfaceFormat.format;
     }
 
-    VkSurfaceFormatKHR SwapChain::chooseSwapSurfaceFormat()
+    void SwapChain::recreate(
+            VkDevice device, VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, GLFWwindow *window,
+            VkRenderPass renderPass
+    )
     {
-        for (const auto &format: supportDetails.formats)
-        {
-            // Prefer 32-bit BGRA format with sRGB color space
-            if (format.format == VK_FORMAT_B8G8R8A8_SRGB and format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
-            {
-                return format;
-            }
-        }
-        // if preferred format not found, return the first available format
-        // Alternatively rank the formats and return highest ranked format
-        return supportDetails.formats[0];
-    }
+        vkDeviceWaitIdle(device);
+        destroy(device);
 
-    VkPresentModeKHR SwapChain::chooseSwapPresentMode()
-    {
-        for (const auto &presentMode: supportDetails.presentModes)
-        {
-            if (presentMode == VK_PRESENT_MODE_MAILBOX_KHR)
-            { // Prefer Triple buffering
-                return presentMode;
-            }
-        }
-        return VK_PRESENT_MODE_FIFO_KHR;
-    }
-
-    VkExtent2D SwapChain::chooseSwapExtent(GLFWwindow *window)
-    {
-        if (supportDetails.capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
-        {
-            return supportDetails.capabilities.currentExtent;
-        } else
-        {
-            int width, height;
-            glfwGetFramebufferSize(window, &width, &height);
-
-            VkExtent2D actualExtent = {
-                    static_cast<uint32_t>(width),
-                    static_cast<uint32_t>(height)
-            };
-
-            actualExtent.width = std::clamp(actualExtent.width, supportDetails.capabilities.minImageExtent.width,
-                                            supportDetails.capabilities.maxImageExtent.width);
-            actualExtent.height = std::clamp(actualExtent.height, supportDetails.capabilities.minImageExtent.height,
-                                             supportDetails.capabilities.maxImageExtent.height);
-
-            return actualExtent;
-        }
-    }
-
-    SwapChainSupportDetails SwapChain::querySwapChainSupport(VkPhysicalDevice physicalDevice, VkSurfaceKHR surface)
-    {
-        SwapChainSupportDetails details;
-        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, &details.capabilities);
-
-        uint32_t formatCount;
-        vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount, nullptr);
-
-        if (formatCount != 0)
-        {
-            details.formats.resize(formatCount);
-            vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount, details.formats.data());
-        }
-
-        return details;
-    }
-
-    void SwapChain::destroy(VkDevice device) const
-    {
-        for (auto framebuffer : framebuffers)
-            vkDestroyFramebuffer(device, framebuffer, nullptr);
-
-        for (auto imageView: imageViews)
-            vkDestroyImageView(device, imageView, nullptr);
-
-        vkDestroySwapchainKHR(device, handle, nullptr);
-
-        CORVUS_LOG(info, "Swap chain destroyed!");
+        create(device, physicalDevice, surface, window);
+        createImageViews(device);
+        createFramebuffers(device, renderPass);
     }
 
 } // Corvus
