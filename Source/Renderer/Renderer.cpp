@@ -11,7 +11,7 @@ namespace Corvus
     Renderer::Renderer(
             std::shared_ptr<Device> device, std::shared_ptr<Window> window, std::shared_ptr<Pipeline> pipeline
     )
-            : m_Device(std::move(std::move(device))), m_Window(std::move(window)), m_Pipeline(std::move(pipeline))
+            : m_Device(std::move(std::move(device))), m_Window(std::move(window)), m_Pipeline(std::move(pipeline)), m_VertexBuffer(vertices, m_Device)
     {
         createCommandBuffers();
         recordCommandBuffers(m_CommandBuffers[m_CurrentFrame], 0);
@@ -107,7 +107,9 @@ namespace Corvus
         setViewport(commandBuffer, extent);
         setScissor(commandBuffer, extent);
 
-        vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+        m_VertexBuffer.bind(commandBuffer);
+
+        vkCmdDraw(commandBuffer, static_cast<uint32_t>(vertices.size()), 1, 0, 0);
         cleanupFrame(commandBuffer);
     }
 
@@ -184,7 +186,8 @@ namespace Corvus
     uint32_t Renderer::acquireNextImage(VkDevice device, SwapChain &swapChain)
     {
         uint32_t imageIndex;
-        auto success = vkAcquireNextImageKHR(device, swapChain.getHandle(), UINT64_MAX, m_ImageAvailableSemaphores[m_CurrentFrame],
+        auto success = vkAcquireNextImageKHR(device, swapChain.getHandle(), UINT64_MAX,
+                                             m_ImageAvailableSemaphores[m_CurrentFrame],
                                              VK_NULL_HANDLE, &imageIndex);
 
         if (success == VK_ERROR_OUT_OF_DATE_KHR)
@@ -241,13 +244,12 @@ namespace Corvus
         if (success == VK_ERROR_OUT_OF_DATE_KHR or success == VK_SUBOPTIMAL_KHR or m_Window->wasResized())
         {
             m_Window->resetResized();
-            m_Device->getSwapChain().recreate(m_Device->getDevice(), m_Device->getPhysicalDevice(), m_Device->getSurface(),
+            m_Device->getSwapChain().recreate(m_Device->getDevice(), m_Device->getPhysicalDevice(),
+                                              m_Device->getSurface(),
                                               m_Window->getHandle(), m_Device->getRenderPass());
-        }
-        else
+        } else
         {
             CORVUS_ASSERT(success == VK_SUCCESS, "Failed to present image!")
         }
     }
-
 } // Corvus

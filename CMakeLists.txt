@@ -11,6 +11,10 @@ add_executable(${PROJECT_NAME}
         Source/Core/DebugMessenger.h
         Source/Renderer/Renderer.cpp
         Source/Renderer/Renderer.h
+        Source/Renderer/Vertex.cpp
+        Source/Renderer/Vertex.h
+        Source/Renderer/VertexBuffer.cpp
+        Source/Renderer/VertexBuffer.h
 )
 
 add_subdirectory(Source)

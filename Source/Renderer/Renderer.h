@@ -9,6 +9,8 @@
 #include "Core/Device.h"
 #include "Core/Window.h"
 #include "Pipeline.h"
+#include "Vertex.h"
+#include "VertexBuffer.h"
 
 namespace Corvus
 {
@@ -19,6 +21,13 @@ namespace Corvus
         ~Renderer();
 
         void draw();
+
+        const std::vector<Vertex> vertices = {
+                {{0.0f, -0.5f, 0.0}, {1.0f, 0.0f, 1.0f}},
+                {{0.5f, 0.5f, 0.0}, {0.0f, 1.0f, 0.0f}},
+                {{-0.5f, 0.5f, 0.0}, {0.0f, 0.0f, 1.0f}}
+        };
+
     private:
         std::shared_ptr<Device> m_Device;
         std::shared_ptr<Window> m_Window;
@@ -31,6 +40,8 @@ namespace Corvus
 
         const uint32_t MAX_FRAMES_IN_FLIGHT = 2;
         uint32_t m_CurrentFrame = 0;
+
+        VertexBuffer m_VertexBuffer;
 
     private:
         void createCommandBuffers();
@@ -48,7 +59,7 @@ namespace Corvus
 
         // Draw pipeline
         void synchronize(VkDevice device);
-        uint32_t acquireNextImage(VkDevice device, SwapChain& swapChain);
+        uint32_t acquireNextImage(VkDevice device, SwapChain &swapChain);
         void prepareCommandBuffer(uint32_t imageIndex);
         void submitGraphicsQueue();
         void presentImage(VkSwapchainKHR swapChain, uint32_t imageIndex);
