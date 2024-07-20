@@ -123,7 +123,6 @@ namespace Corvus
             auto success = vkCreateImageView(device, &createInfo, nullptr, &imageViews[i]);
             CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create image views!")
         }
-        CORVUS_LOG(info, "Image views created successfully!");
     }
 
     void SwapChain::createFramebuffers(VkDevice device, VkRenderPass renderPass)
@@ -147,7 +146,6 @@ namespace Corvus
             auto success = vkCreateFramebuffer(device, &framebufferInfo, nullptr, &framebuffers[i]);
             CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create framebuffer!")
         }
-        CORVUS_LOG(info, "Framebuffers created successfully! {}", framebuffers.size());
     }
 
     void SwapChain::create(VkDevice device, VkPhysicalDevice physicalDevice, VkSurfaceKHR surface, GLFWwindow *window)
@@ -194,7 +192,6 @@ namespace Corvus
 
         auto success = vkCreateSwapchainKHR(device, &createInfo, nullptr, &handle);
         CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create swap chain!")
-        CORVUS_LOG(info, "Swap chain created successfully!");
 
         vkGetSwapchainImagesKHR(device, handle, &imageCount, nullptr);
         images.resize(imageCount);
@@ -207,12 +204,23 @@ namespace Corvus
             VkRenderPass renderPass
     )
     {
+        handleWindowMinimization(window);
         vkDeviceWaitIdle(device);
         destroy(device);
 
         create(device, physicalDevice, surface, window);
         createImageViews(device);
         createFramebuffers(device, renderPass);
+    }
+
+    void SwapChain::handleWindowMinimization(GLFWwindow *window)
+    {
+        int width = 0, height = 0;
+        glfwGetFramebufferSize(window, &width, &height);
+        while (width == 0 || height == 0) {
+            glfwGetFramebufferSize(window, &width, &height);
+            glfwWaitEvents();
+        }
     }
 
 } // Corvus

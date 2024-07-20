@@ -59,6 +59,7 @@ namespace Corvus
         VkSurfaceFormatKHR chooseSwapSurfaceFormat();
         VkPresentModeKHR chooseSwapPresentMode();
         VkExtent2D chooseSwapExtent(GLFWwindow *window) const;
+        static void handleWindowMinimization(GLFWwindow *window);
     };
 
 } // Corvus

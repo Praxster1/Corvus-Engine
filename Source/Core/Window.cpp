@@ -23,15 +23,19 @@ namespace Corvus {
                 width = glfwGetVideoMode(m_Monitor)->width;
                 height = glfwGetVideoMode(m_Monitor)->height;
             }
-            glfwSetErrorCallback(glfwErrorCallback);
+
             glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // Disable OpenGL
-            glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // Disable window resizing
+            glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+
             m_Window = glfwCreateWindow(static_cast<int>(width), static_cast<int>(height), title, nullptr, nullptr);
+            glfwSetWindowUserPointer(m_Window, this);
+            glfwSetFramebufferSizeCallback(m_Window, resizeCallback);
+            glfwSetErrorCallback(glfwErrorCallback);
+
             if (not m_Window) {
                 CORVUS_LOG(error, "Failed to create window!");
             } else {
                 CORVUS_LOG(info, "Window Resolution: {}x{}", width, height);
-                //glfwMakeContextCurrent(m_Window);
             }
         }
     }
@@ -42,12 +46,24 @@ namespace Corvus {
         glfwTerminate();
     }
 
-    void Window::update() const {
-        //glfwSwapBuffers(m_Window);
+    void Window::update() {
         glfwPollEvents();
     }
 
     bool Window::shouldClose() const {
         return glfwWindowShouldClose(m_Window);
     }
+
+    bool Window::wasResized() const
+    {
+        return m_WasResized;
+    }
+
+    void Window::resizeCallback(GLFWwindow *window, int width, int height)
+    {
+        auto *win = reinterpret_cast<Window *>(glfwGetWindowUserPointer(window));
+        win->m_WasResized = true;
+    }
+
 } // Corvus
+

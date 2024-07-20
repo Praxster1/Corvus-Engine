@@ -238,8 +238,9 @@ namespace Corvus
         };
 
         auto success = vkQueuePresentKHR(m_Device->getQueue("present"), &presentInfo);
-        if (success == VK_ERROR_OUT_OF_DATE_KHR or success == VK_SUBOPTIMAL_KHR)
+        if (success == VK_ERROR_OUT_OF_DATE_KHR or success == VK_SUBOPTIMAL_KHR or m_Window->wasResized())
         {
+            m_Window->resetResized();
             m_Device->getSwapChain().recreate(m_Device->getDevice(), m_Device->getPhysicalDevice(), m_Device->getSurface(),
                                               m_Window->getHandle(), m_Device->getRenderPass());
         }

@@ -11,15 +11,21 @@ namespace Corvus {
     private:
         GLFWwindow* m_Window = nullptr;
         GLFWmonitor* m_Monitor = nullptr;
+        bool m_WasResized = false;
+
+    private:
+        static void resizeCallback(GLFWwindow* window, int width, int height);
 
     public:
         explicit Window(const char *title, bool fullscreen = false, uint32_t width = 1920, uint32_t height = 1080);
         ~Window();
 
-        void update() const;
+        static void update() ;
         [[nodiscard]] bool shouldClose() const;
-        [[nodiscard]] GLFWwindow *getHandle() const { return m_Window; }
+        [[nodiscard]] bool wasResized() const;
 
+        void resetResized() { m_WasResized = false; }
+        [[nodiscard]] GLFWwindow *getHandle() const { return m_Window; }
     };
 
 
