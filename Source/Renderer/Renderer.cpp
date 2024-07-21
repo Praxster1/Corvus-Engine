@@ -9,9 +9,9 @@
 namespace Corvus
 {
     Renderer::Renderer(
-            std::shared_ptr<Device> device, std::shared_ptr<Window> window, std::shared_ptr<Pipeline> pipeline
+            std::shared_ptr<Device> device, std::shared_ptr<Window> window, std::shared_ptr<Pipeline> pipeline,  std::shared_ptr<UserInterface> userInterface
     )
-            : m_Device(std::move(std::move(device))), m_Window(std::move(window)), m_Pipeline(std::move(pipeline)), m_VertexBuffer(vertices, m_Device)
+            : m_Device(std::move(std::move(device))), m_Window(std::move(window)), m_Pipeline(std::move(pipeline)), m_UserInterface(std::move(userInterface)), m_VertexBuffer(vertices, m_Device)
     {
         createCommandBuffers();
         recordCommandBuffers(m_CommandBuffers[m_CurrentFrame], 0);
@@ -110,6 +110,8 @@ namespace Corvus
         m_VertexBuffer.bind(commandBuffer);
 
         vkCmdDraw(commandBuffer, static_cast<uint32_t>(vertices.size()), 1, 0, 0);
+
+        m_UserInterface->render(commandBuffer);
         cleanupFrame(commandBuffer);
     }
 

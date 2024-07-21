@@ -27,8 +27,8 @@ namespace Corvus
         std::shared_ptr<Device> m_Device;
         std::vector<Vertex> m_Vertices;
 
-        VkBuffer m_VertexBuffer;
-        VkDeviceMemory m_VertexBufferMemory;
+        VkBuffer m_VertexBuffer = VK_NULL_HANDLE;
+        VkDeviceMemory m_VertexBufferMemory = VK_NULL_HANDLE;
     private:
         void createBuffer();
         void allocateMemory();

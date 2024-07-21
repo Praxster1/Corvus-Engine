@@ -13,8 +13,8 @@ namespace Corvus
 
     struct Vertex
     {
-        glm::vec3 m_Position;
-        glm::vec3 m_Color;
+        glm::vec3 position;
+        glm::vec3 color;
 
     public:
         static VkVertexInputBindingDescription getBindingDescription();

@@ -15,6 +15,8 @@ add_executable(${PROJECT_NAME}
         Source/Renderer/Vertex.h
         Source/Renderer/VertexBuffer.cpp
         Source/Renderer/VertexBuffer.h
+        Source/Core/UserInterface.cpp
+        Source/Core/UserInterface.h
 )
 
 add_subdirectory(Source)

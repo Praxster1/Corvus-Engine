@@ -28,6 +28,8 @@ namespace Corvus
         ~Device();
         Device(const Device &) = delete;
 
+        [[nodiscard]] Instance &getInstance() { return m_Instance; }
+        [[nodiscard]] DebugMessenger &getDebugMessenger() { return m_DebugMessenger; }
         [[nodiscard]] VkDevice getDevice() const { return m_Device; }
         [[nodiscard]] VkPhysicalDevice getPhysicalDevice() const { return m_PhysicalDevice; }
         [[nodiscard]] VkSurfaceKHR getSurface() const { return m_Surface; }

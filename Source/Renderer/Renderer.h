@@ -11,18 +11,21 @@
 #include "Pipeline.h"
 #include "Vertex.h"
 #include "VertexBuffer.h"
+#include "glm/ext/matrix_transform.hpp"
+#include "Core/UserInterface.h"
 
 namespace Corvus
 {
     class Renderer
     {
     public:
-        Renderer(std::shared_ptr<Device> device, std::shared_ptr<Window> window, std::shared_ptr<Pipeline> pipeline);
+        Renderer(std::shared_ptr<Device> device, std::shared_ptr<Window> window, std::shared_ptr<Pipeline> pipeline,
+                 std::shared_ptr<UserInterface> userInterface);
         ~Renderer();
 
         void draw();
 
-        const std::vector<Vertex> vertices = {
+        std::vector<Vertex> vertices = {
                 {{0.0f, -0.5f, 0.0}, {1.0f, 0.0f, 1.0f}},
                 {{0.5f, 0.5f, 0.0}, {0.0f, 1.0f, 0.0f}},
                 {{-0.5f, 0.5f, 0.0}, {0.0f, 0.0f, 1.0f}}
@@ -32,6 +35,7 @@ namespace Corvus
         std::shared_ptr<Device> m_Device;
         std::shared_ptr<Window> m_Window;
         std::shared_ptr<Pipeline> m_Pipeline;
+        std::shared_ptr<UserInterface> m_UserInterface;
 
         std::vector<VkCommandBuffer> m_CommandBuffers;
         std::vector<VkSemaphore> m_ImageAvailableSemaphores;
