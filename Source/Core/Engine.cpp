@@ -9,7 +9,7 @@ namespace Corvus
     Engine::Engine()
     {
         CORVUS_LOG(info, "Initializing engine");
-        m_Window = std::make_shared<Window>("Corvus Viewport");
+        m_Window = std::make_shared<Window>("Corvus Engine");
         m_Device = std::make_shared<Device>(m_Window);
         m_Pipeline = std::make_shared<Pipeline>(m_Device, "shaders/simple_shader.vert.spv",
                                                 "shaders/simple_shader.frag.spv");

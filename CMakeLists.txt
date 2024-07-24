@@ -2,22 +2,7 @@ cmake_minimum_required(VERSION 3.21)
 set(CMAKE_CXX_STANDARD 23)
 
 project(Engine)
-add_executable(${PROJECT_NAME}
-        Source/Renderer/Shader.cpp
-        Source/Renderer/Shader.h
-        Source/Core/Instance.cpp
-        Source/Core/Instance.h
-        Source/Core/DebugMessenger.cpp
-        Source/Core/DebugMessenger.h
-        Source/Renderer/Renderer.cpp
-        Source/Renderer/Renderer.h
-        Source/Renderer/Vertex.cpp
-        Source/Renderer/Vertex.h
-        Source/Renderer/VertexBuffer.cpp
-        Source/Renderer/VertexBuffer.h
-        Source/Core/UserInterface.cpp
-        Source/Core/UserInterface.h
-)
+add_executable(${PROJECT_NAME})
 
 add_subdirectory(Source)
 add_subdirectory(External)

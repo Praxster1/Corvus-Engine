@@ -47,6 +47,7 @@ namespace Corvus {
     }
 
     void Window::update() {
+
         glfwPollEvents();
     }
 

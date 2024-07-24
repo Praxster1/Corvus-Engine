@@ -1,5 +1,9 @@
 list(APPEND LOCAL_SOURCE_FILES
         Pipeline.cpp
+        Renderer.cpp
+        Vertex.cpp
+        VertexBuffer.cpp
+        Shader.cpp
 )
 
 foreach(file ${LOCAL_SOURCE_FILES})

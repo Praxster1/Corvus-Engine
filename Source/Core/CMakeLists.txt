@@ -5,6 +5,9 @@ list(APPEND LOCAL_SOURCE_FILES
         Device.cpp
         SwapChain.cpp
         QueueFamilyIndices.cpp
+        UserInterface.cpp
+        Instance.cpp
+        DebugMessenger.cpp
 )
 
 foreach(file ${LOCAL_SOURCE_FILES})

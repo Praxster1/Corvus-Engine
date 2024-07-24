@@ -22,7 +22,6 @@ namespace Corvus
         Renderer(std::shared_ptr<Device> device, std::shared_ptr<Window> window, std::shared_ptr<Pipeline> pipeline,
                  std::shared_ptr<UserInterface> userInterface);
         ~Renderer();
-
         void draw();
 
         std::vector<Vertex> vertices = {

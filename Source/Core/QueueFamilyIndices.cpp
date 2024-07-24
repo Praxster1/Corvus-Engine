@@ -1,7 +1,3 @@
-//
-// Created by timow on 13/07/2024.
-//
-
 #include <vulkan/vulkan.h>
 #include <vector>
 #include "QueueFamilyIndices.h"

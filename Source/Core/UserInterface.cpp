@@ -34,15 +34,7 @@ namespace Corvus
         ImGui::NewFrame();
 
         {
-            ImGui::Begin("Hello, world!");
-            ImGui::Button("This is some useful text.");
-            ImGui::End();
 
-            menuBar();
-        }
-
-        if (true) {
-            ImGui::ShowDemoWindow();
         }
 
         ImGui::Render();
@@ -131,27 +123,6 @@ namespace Corvus
 
     void UserInterface::menuBar()
     {
-        if (ImGui::BeginMainMenuBar())
-        {
-            if (ImGui::BeginMenu("File"))
-            {
-                if (ImGui::MenuItem("Open..", "Ctrl+O"))
-                { /* Do stuff */ }
-                if (ImGui::MenuItem("Save", "Ctrl+S"))
-                { /* Do stuff */ }
-                if (ImGui::MenuItem("Close", "Ctrl+W"))
-                { /* Do stuff */ }
-                ImGui::EndMenu();
-            }
-            if (ImGui::BeginMenu("Exit"))
-            {
-                if (ImGui::MenuItem("Exit", "Ctrl+Q"))
-                { /* Do stuff */ }
-                ImGui::EndMenu();
-            }
-
-            ImGui::EndMainMenuBar();
-        }
 
     }
 } // Corvus
