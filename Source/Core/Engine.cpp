@@ -23,8 +23,9 @@ namespace Corvus
     {
         while (not m_Window->shouldClose())
         {
-
+            //CORVUS_PROFILE_SCOPE_START("Frame");
             m_Window->update();
+            //CORVUS_PROFILE_SCOPE_STOP("Frame");
         }
     }
 } // Corvus

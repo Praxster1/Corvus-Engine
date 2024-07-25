@@ -6,6 +6,7 @@
 #define ENGINE_CORVUS_H
 
 #include "Utility/Log.h"
+#include "Utility/Profile.h"
 
 #define ENGINE_NAME "Corvus"
 

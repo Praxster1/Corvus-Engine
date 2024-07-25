@@ -7,7 +7,8 @@ add_executable(Engine
         Source/Core/Engine.cpp
         Source/Core/Engine.h
         Source/Core/Window.cpp
-        Source/Core/Window.h)
+        Source/Core/Window.h
+        Source/Utility/Profile.h)
 add_subdirectory(Source)
 add_subdirectory(External)
 
