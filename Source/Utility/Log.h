@@ -8,7 +8,6 @@
 #include "spdlog/spdlog.h"
 
 #define CORVUS_LOG(Level, ...) spdlog::Level(__VA_ARGS__)
-#define CORVUS_TRACE(...) CORVUS_LOG(trace, __VA_ARGS__)
 
 
 #endif //ENGINE_LOG_H

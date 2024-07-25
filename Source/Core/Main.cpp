@@ -1,7 +1,8 @@
-#include "Utility/Log.h"
-#include <memory>
+#include "Core/Engine.h"
 
+using namespace Corvus;
 int main() {
-    CORVUS_LOG(info, "Corvus Engine started");
-
+    auto engine = new Engine();
+    engine->run();
+    delete engine;
 }
