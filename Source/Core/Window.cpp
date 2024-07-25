@@ -4,6 +4,7 @@
 
 #include "Window.h"
 #include "Utility/Corvus.h"
+#include "stb_image.h"
 
 namespace Corvus
 {
@@ -43,14 +44,14 @@ namespace Corvus
 
         setIcon(iconPath);
 
-        CORVUS_LOG(info, "Window created!");
+        CORVUS_LOG(info, "Window created.");
     }
 
     Window::~Window()
     {
-        CORVUS_LOG(info, "Destroying window...");
         glfwDestroyWindow(m_Window);
         glfwTerminate();
+        CORVUS_LOG(info, "Window destroyed.");
     }
 
     void Window::update()
@@ -65,16 +66,28 @@ namespace Corvus
 
     bool Window::wasResized() const
     {
-        return false;
+        return m_WasResized;
     }
 
     void Window::resizeCallback(GLFWwindow* window, int width, int height)
     {
+        auto* userWindow = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+        userWindow->m_WasResized = true;
 
+        userWindow->m_Width = static_cast<uint32_t>(width);
+        userWindow->m_Height = static_cast<uint32_t>(height);
     }
 
     void Window::setIcon(std::string& iconPath)
     {
+        if (iconPath.empty())
+            return;
 
+        GLFWimage icon;
+        int channels;
+
+        icon.pixels = stbi_load(iconPath.c_str(), &icon.width, &icon.height, &channels, 4);
+        glfwSetWindowIcon(m_Window, 1, &icon);
+        stbi_image_free(icon.pixels);
     }
 } // Corvus
