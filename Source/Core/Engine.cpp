@@ -3,27 +3,24 @@
 //
 
 #include "Engine.h"
-#include "Utility/Corvus.h"
 
 namespace Corvus
 {
     Engine::Engine()
             : m_Window(nullptr)
     {
-        CORVUS_LOG(info, "Engine starting up.");
-        m_Window = std::make_shared<Window>("Corvus", false, 1920, 1080, "Resources/icon.png");
+        m_Window = std::make_shared<Window>();
     }
 
     Engine::~Engine()
     {
-        CORVUS_LOG(info, "Engine shutting down.");
+
     }
 
     void Engine::run()
     {
         while (not m_Window->shouldClose())
         {
-
             m_Window->update();
         }
     }
