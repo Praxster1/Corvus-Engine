@@ -9,6 +9,7 @@
 #include "Utility/Profile.h"
 
 #define ENGINE_NAME "Corvus"
+#define CORVUS_STRINGIFY(x) #x
 
 #ifdef NDEBUG
 static constexpr bool CORVUS_VALIDATION_LAYERS = false;

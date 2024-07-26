@@ -1,15 +1,20 @@
-//
-// Created by timow on 25/07/2024.
-//
-
 #ifndef ENGINE_TIMER_H
 #define ENGINE_TIMER_H
 
 #include <map>
+#include <chrono>
+#include "Utility/Log.h"
+#include "spdlog/spdlog.h"
+
+
+#define CORVUS_PROFILE_START() Timer::getInstance().init()
+#define CORVUS_PROFILE_STOP() Timer::getInstance().destroy()
+
+#define CORVUS_PROFILE_SCOPE_START(name) Timer::getInstance().start(name)
+#define CORVUS_PROFILE_SCOPE_STOP(name) Timer::getInstance().stop(name)
 
 namespace Corvus
 {
-
     class Timer {
     public:
 
