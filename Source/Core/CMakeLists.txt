@@ -1,1 +1,1 @@
-target_sources(Engine PUBLIC Main.cpp )
+target_sources(Engine PUBLIC Main.cpp)
