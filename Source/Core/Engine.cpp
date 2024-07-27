@@ -11,13 +11,13 @@ namespace Corvus
         CORVUS_LOG(info, "Initializing engine");
         m_Window = std::make_shared<Window>("Corvus Engine", false, 800, 600,"Resources/icon.png");
         m_Device = std::make_shared<Device>(m_Window);
-        m_Pipeline = std::make_shared<Pipeline>(m_Device, "Shaders/simple_shader.vert.spv",
-                                                "Shaders/simple_shader.frag.spv");
+        m_Pipeline = std::make_shared<Pipeline>(m_Device, "Shaders/vertexShader.glsl.spv",
+                                                "Shaders/fragmentShader.glsl.spv");
         m_UserInterface = std::make_shared<UserInterface>(m_Device, m_Window);
         m_Renderer = std::make_unique<Renderer>(m_Device, m_Window, m_Pipeline, m_UserInterface);
     }
 
-    void Engine::run()
+    void Engine::run() const
     {
         CORVUS_LOG(info, "Starting engine loop");
 

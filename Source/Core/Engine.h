@@ -10,15 +10,13 @@
 
 namespace Corvus
 {
-
     class Engine
     {
     public:
         Engine();
         ~Engine();
 
-        void run();
-
+        void run() const;
     private:
         std::shared_ptr<Window> m_Window;
         std::shared_ptr<Device> m_Device;
