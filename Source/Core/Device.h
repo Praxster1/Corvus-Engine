@@ -8,7 +8,6 @@
 #include "Utility/Corvus.h"
 #include "Core/Window.h"
 #include "SwapChain.h"
-#include "QueueFamilyIndices.h"
 #include "Instance.h"
 #include "DebugMessenger.h"
 
@@ -57,8 +56,8 @@ namespace Corvus
         void createWindowSurface();
 
         void pickPhysicalDevice();
-        bool isDeviceSuitable(VkPhysicalDevice const &physicalDevice);
-        bool checkDeviceExtensionSupport(VkPhysicalDevice const &physicalDevice);
+        [[nodiscard]] bool isDeviceSuitable(VkPhysicalDevice const &physicalDevice) const;
+        [[nodiscard]] bool checkDeviceExtensionSupport(VkPhysicalDevice const &physicalDevice) const;
 
         void createLogicalDevice();
         void createImageViews();

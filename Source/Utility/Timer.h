@@ -1,7 +1,6 @@
 #ifndef ENGINE_TIMER_H
 #define ENGINE_TIMER_H
 
-#include <map>
 #include <chrono>
 #include "Utility/Log.h"
 #include "spdlog/spdlog.h"
@@ -41,7 +40,7 @@ namespace Corvus
 
         void stop(const std::string& name) {
             auto endTime = std::chrono::high_resolution_clock::now();
-            if (timers.find(name) != timers.end()) {
+            if (timers.contains(name)) {
                 auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - timers[name]).count();
                 CORVUS_LOG(trace, "Timer [{}] took {} microseconds.", name, duration);
                 timers.erase(name);  // Remove the timer after stopping

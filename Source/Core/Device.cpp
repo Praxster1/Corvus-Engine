@@ -3,6 +3,8 @@
 #include <utility>
 #include <set>
 
+#include "QueueFamilyIndices.h"
+
 namespace Corvus
 {
     Device::Device(std::shared_ptr<Window> window)
@@ -59,7 +61,7 @@ namespace Corvus
         CORVUS_ASSERT(m_PhysicalDevice != VK_NULL_HANDLE, "Failed to find a suitable GPU!")
     }
 
-    bool Device::isDeviceSuitable(VkPhysicalDevice const &physicalDevice)
+    bool Device::isDeviceSuitable(VkPhysicalDevice const &physicalDevice) const
     {
         QueueFamilyIndices indices = QueueFamilyIndices::findQueueFamilies(physicalDevice, m_Surface);
         bool deviceExtensionsSupported = checkDeviceExtensionSupport(physicalDevice);
@@ -74,7 +76,7 @@ namespace Corvus
         return indices.isComplete() and deviceExtensionsSupported and swapChainAdequate;
     }
 
-    bool Device::checkDeviceExtensionSupport(VkPhysicalDevice const &physicalDevice)
+    bool Device::checkDeviceExtensionSupport(VkPhysicalDevice const &physicalDevice) const
     {
         uint32_t extensionCount;
         vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &extensionCount, nullptr);

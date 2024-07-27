@@ -18,7 +18,7 @@ namespace Corvus
         PFN_vkDestroyDebugUtilsMessengerEXT m_DestroyFunc;
         Instance* m_Instance;
 
-        constexpr static const std::array<const char *, 1> s_ValidationLayers = {"VK_LAYER_KHRONOS_validation"};
+        constexpr static std::array<const char *, 1> s_ValidationLayers = {"VK_LAYER_KHRONOS_validation"};
         [[maybe_unused]] static std::array<const char *, 1> getValidationLayers();
         static bool checkValidationLayerSupport();
 

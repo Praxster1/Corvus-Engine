@@ -15,7 +15,7 @@ void glfwErrorCallback(int error, const char* description)
 
 namespace Corvus
 {
-    Window::Window(const char* title, bool fullscreen, uint32_t width, uint32_t height, std::string iconPath)
+    Window::Window(const char* title, bool fullscreen, uint32_t width, uint32_t height, const std::string& iconPath)
             : m_Title(title), m_Width(width), m_Height(height)
     {
         if (not glfwInit())
@@ -76,14 +76,14 @@ namespace Corvus
 
     void Window::resizeCallback(GLFWwindow* window, [[maybe_unused]] int width, [[maybe_unused]] int height)
     {
-        auto* userWindow = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+        auto* userWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
         userWindow->m_WasResized = true;
 
         userWindow->m_Width = static_cast<uint32_t>(width);
         userWindow->m_Height = static_cast<uint32_t>(height);
     }
 
-    void Window::setIcon(std::string& iconPath)
+    void Window::setIcon(const std::string& iconPath) const
     {
         if (iconPath.empty())
             return;

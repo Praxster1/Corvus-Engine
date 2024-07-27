@@ -12,7 +12,7 @@ namespace Corvus
     class Window
     {
     public:
-        explicit Window(const char* title, bool fullscreen = false, uint32_t width = 1920, uint32_t height = 1080, std::string iconPath = "");
+        explicit Window(const char* title, bool fullscreen = false, uint32_t width = 1920, uint32_t height = 1080, const std::string& iconPath = "");
         ~Window();
 
         static void update();
@@ -38,7 +38,7 @@ namespace Corvus
 
     private:
         static void resizeCallback(GLFWwindow* window, int width, int height);
-        void setIcon(std::string& iconPath);
+        void setIcon(const std::string& iconPath) const;
     };
 
 

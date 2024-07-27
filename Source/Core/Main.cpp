@@ -1,6 +1,5 @@
 #include "Utility/Log.h"
 #include "Engine.h"
-#include <memory>
 #include "Utility/Timer.h"
 
 using namespace Corvus;
