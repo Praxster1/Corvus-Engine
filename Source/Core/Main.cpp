@@ -7,7 +7,7 @@ int main() {
     CORVUS_PROFILE_START();
 
     CORVUS_PROFILE_SCOPE_START("Boot");
-    auto engine = new Engine();
+    const auto engine = new Engine();
     CORVUS_PROFILE_SCOPE_STOP("Boot");
 
     CORVUS_PROFILE_SCOPE_START("Running");

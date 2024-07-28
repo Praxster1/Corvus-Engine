@@ -22,7 +22,7 @@ namespace Corvus
         [[nodiscard]] VkBuffer getVertexBuffer() const { return m_VertexBuffer; }
 
         [[nodiscard]] VkDeviceMemory getVertexBufferMemory() const { return m_VertexBufferMemory; }
-        void bind(VkCommandBuffer commandBuffer);
+        void bind(VkCommandBuffer commandBuffer) const;
 
     private:
         std::shared_ptr<Device> m_Device;
@@ -33,8 +33,8 @@ namespace Corvus
     private:
         void createBuffer();
         void allocateMemory();
-        uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-        void copyBufferMemory();
+        uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
+        void copyBufferMemory() const;
     };
 
 } // Corvus

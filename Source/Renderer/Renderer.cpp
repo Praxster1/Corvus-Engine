@@ -5,15 +5,18 @@
 #include "Renderer.h"
 
 #include <utility>
+#include <vulkan/vk_enum_string_helper.h>
+
+
 
 namespace Corvus
 {
-    Renderer::Renderer(
-        std::shared_ptr<Device> device, std::shared_ptr<Window> window, std::shared_ptr<Pipeline> pipeline
-    )
-        : m_Device(std::move(std::move(device))), m_Window(std::move(window)), m_Pipeline(std::move(pipeline)),
-          m_VertexBuffer(vertices, m_Device)
+    Renderer::Renderer(RendererSpecification  specification)
+        : m_Specification(std::move(specification))
     {
+        m_Device = std::make_shared<Device>(m_Specification.window);
+        m_Pipeline = std::make_shared<Pipeline>(m_Device, m_Specification.vertexShader, m_Specification.fragmentShader);
+
         createCommandBuffers();
         recordCommandBuffers(m_CommandBuffers[m_CurrentFrame], 0);
         createSyncObjects();
@@ -75,10 +78,10 @@ namespace Corvus
             .flags = VK_FENCE_CREATE_SIGNALED_BIT // Start with signaled state, so we don't wait on first draw
         };
 
-        VkResult success;
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
         {
-            success = vkCreateSemaphore(m_Device->getDevice(), &semaphoreInfo, nullptr, &m_ImageAvailableSemaphores[i]);
+            VkResult success = vkCreateSemaphore(m_Device->getDevice(), &semaphoreInfo, nullptr,
+                                                 &m_ImageAvailableSemaphores[i]);
             CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create image available semaphore!")
 
             success = vkCreateSemaphore(m_Device->getDevice(), &semaphoreInfo, nullptr, &m_RenderFinishedSemaphores[i]);
@@ -95,7 +98,7 @@ namespace Corvus
         m_CurrentFrame = (m_CurrentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
     }
 
-    void Renderer::recordCommandBuffers(VkCommandBuffer commandBuffer, uint32_t imageIndex)
+    void Renderer::recordCommandBuffers(VkCommandBuffer commandBuffer, uint32_t imageIndex) const
     {
         auto swapChain = m_Device->getSwapChain();
         auto extent = swapChain.getExtent();
@@ -108,14 +111,16 @@ namespace Corvus
         setViewport(commandBuffer, extent);
         setScissor(commandBuffer, extent);
 
-        m_VertexBuffer.bind(commandBuffer);
+        // TODO: Remove static -> VK_ERROR_DEVICE_LOST
+        const static auto vertexBuffer = VertexBuffer(m_Specification.vertices, m_Device);
+        vertexBuffer.bind(commandBuffer);
 
-        vkCmdDraw(commandBuffer, static_cast<uint32_t>(vertices.size()), 1, 0, 0);
+        vkCmdDraw(commandBuffer, static_cast<uint32_t>(m_Specification.vertices.size()), 1, 0, 0);
 
         cleanupFrame(commandBuffer);
     }
 
-    void Renderer::beginCommandBuffer()
+    void Renderer::beginCommandBuffer() const
     {
         VkCommandBufferBeginInfo beginInfo = {
             .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
@@ -127,7 +132,7 @@ namespace Corvus
         CORVUS_ASSERT(success == VK_SUCCESS, "Failed to begin recording command buffer!")
     }
 
-    void Renderer::beginRenderPass(VkCommandBuffer commandBuffer, VkFramebuffer& framebuffer, VkExtent2D extent)
+    void Renderer::beginRenderPass(VkCommandBuffer commandBuffer, VkFramebuffer& framebuffer, VkExtent2D extent) const
     {
         VkClearValue clearColor = {{{0.0f, 0.0f, 0.0f, 1.0f}}};
         VkRenderPassBeginInfo renderPassInfo = {
@@ -179,13 +184,13 @@ namespace Corvus
         CORVUS_ASSERT(success == VK_SUCCESS, "Failed to end recording command buffer!")
     }
 
-    void Renderer::synchronize(VkDevice device)
+    void Renderer::synchronize(VkDevice device) const
     {
         vkWaitForFences(device, 1, &m_InFlightFences[m_CurrentFrame], VK_TRUE, UINT64_MAX);
         vkResetFences(device, 1, &m_InFlightFences[m_CurrentFrame]);
     }
 
-    uint32_t Renderer::acquireNextImage(VkDevice device, SwapChain& swapChain)
+    uint32_t Renderer::acquireNextImage(VkDevice device, SwapChain& swapChain) const
     {
         uint32_t imageIndex;
         auto success = vkAcquireNextImageKHR(device, swapChain.getHandle(), UINT64_MAX,
@@ -194,7 +199,7 @@ namespace Corvus
 
         if (success == VK_ERROR_OUT_OF_DATE_KHR)
         {
-            swapChain.recreate(device, m_Device->getPhysicalDevice(), m_Device->getSurface(), m_Window->getHandle(),
+            swapChain.recreate(device, m_Device->getPhysicalDevice(), m_Device->getSurface(), m_Specification.window->getHandle(),
                                m_Device->getRenderPass());
             return imageIndex;
         }
@@ -213,7 +218,7 @@ namespace Corvus
     {
         const VkSemaphore waitSemaphores[] = {m_ImageAvailableSemaphores[m_CurrentFrame]};
         const VkSemaphore signalSemaphores[] = {m_RenderFinishedSemaphores[m_CurrentFrame]};
-        const VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
+        constexpr VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
 
         const VkSubmitInfo submitInfo = {
             .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
@@ -243,12 +248,12 @@ namespace Corvus
         };
 
         auto success = vkQueuePresentKHR(m_Device->getQueue("present"), &presentInfo);
-        if (success == VK_ERROR_OUT_OF_DATE_KHR or success == VK_SUBOPTIMAL_KHR or m_Window->wasResized())
+        if (success == VK_ERROR_OUT_OF_DATE_KHR or success == VK_SUBOPTIMAL_KHR or m_Specification.window->wasResized())
         {
-            m_Window->resetResized();
+            m_Specification.window->resetResized();
             m_Device->getSwapChain().recreate(m_Device->getDevice(), m_Device->getPhysicalDevice(),
                                               m_Device->getSurface(),
-                                              m_Window->getHandle(), m_Device->getRenderPass());
+                                              m_Specification.window->getHandle(), m_Device->getRenderPass());
         }
         else
         {

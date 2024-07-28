@@ -12,7 +12,7 @@
 namespace Corvus
 {
     VertexBuffer::VertexBuffer(const std::vector<Vertex>& vertices, std::shared_ptr<Device> device)
-            : m_Vertices(vertices), m_Device(std::move(device))
+            : m_Device(std::move(device)), m_Vertices(vertices)
     {
         createBuffer();
         allocateMemory();
@@ -40,7 +40,7 @@ namespace Corvus
 
     }
 
-    uint32_t VertexBuffer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
+    uint32_t VertexBuffer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const
     {
         VkPhysicalDeviceMemoryProperties memProperties;
         vkGetPhysicalDeviceMemoryProperties(m_Device->getPhysicalDevice(), &memProperties);
@@ -70,7 +70,7 @@ namespace Corvus
         CORVUS_ASSERT(success == VK_SUCCESS, "Failed to allocate vertex buffer memory!")
     }
 
-    void VertexBuffer::copyBufferMemory()
+    void VertexBuffer::copyBufferMemory() const
     {
         auto success = vkBindBufferMemory(m_Device->getDevice(), m_VertexBuffer, m_VertexBufferMemory, 0);
         CORVUS_ASSERT(success == VK_SUCCESS, "Failed to bind vertex buffer memory!")
@@ -81,7 +81,7 @@ namespace Corvus
         vkUnmapMemory(m_Device->getDevice(), m_VertexBufferMemory);
     }
 
-    void VertexBuffer::bind(VkCommandBuffer commandBuffer)
+    void VertexBuffer::bind(VkCommandBuffer commandBuffer) const
     {
         VkBuffer vertexBuffers[] = {m_VertexBuffer};
         VkDeviceSize offsets[] = {0};

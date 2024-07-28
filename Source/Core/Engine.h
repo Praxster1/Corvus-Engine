@@ -18,8 +18,6 @@ namespace Corvus
         void run() const;
     private:
         std::shared_ptr<Window> m_Window;
-        std::shared_ptr<Device> m_Device;
-        std::shared_ptr<Pipeline> m_Pipeline;
         std::unique_ptr<Renderer> m_Renderer;
     };
 } // Corvus

@@ -9,10 +9,14 @@ namespace Corvus
     {
         CORVUS_LOG(info, "Initializing engine");
         m_Window = std::make_shared<Window>("Corvus Engine", false, 800, 600,"Resources/icon.png");
-        m_Device = std::make_shared<Device>(m_Window);
-        m_Pipeline = std::make_shared<Pipeline>(m_Device, "Shaders/vertexShader.glsl.spv",
-                                                "Shaders/fragmentShader.glsl.spv");
-        m_Renderer = std::make_unique<Renderer>(m_Device, m_Window, m_Pipeline);
+
+        auto renderSpec = RendererSpecification{
+            m_Window,
+            "Shaders/vertexShader.glsl.spv",
+            "Shaders/fragmentShader.glsl.spv"
+        };
+
+        m_Renderer = std::make_unique<Renderer>(renderSpec);
     }
 
     void Engine::run() const
@@ -24,7 +28,7 @@ namespace Corvus
             m_Renderer->draw();
             m_Window->update();
         }
-        vkDeviceWaitIdle(m_Device->getDevice());
+        vkDeviceWaitIdle(m_Renderer->getDevice()->getDevice());
     }
 
     Engine::~Engine() = default;
