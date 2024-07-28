@@ -28,7 +28,7 @@ namespace Corvus
             m_Renderer->draw();
             m_Window->update();
         }
-        vkDeviceWaitIdle(m_Renderer->getDevice()->getDevice());
+        m_Renderer->waitIdle();
     }
 
     Engine::~Engine() = default;

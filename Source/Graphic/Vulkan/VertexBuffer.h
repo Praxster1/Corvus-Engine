@@ -33,7 +33,7 @@ namespace Corvus
     private:
         void createBuffer();
         void allocateMemory();
-        uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
+        [[nodiscard]] uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
         void copyBufferMemory() const;
     };
 

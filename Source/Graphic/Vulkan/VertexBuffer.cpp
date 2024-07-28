@@ -37,7 +37,6 @@ namespace Corvus
 
         auto success = vkCreateBuffer(m_Device->getDevice(), &bufferInfo, nullptr, &m_VertexBuffer);
         CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create vertex buffer!")
-
     }
 
     uint32_t VertexBuffer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const

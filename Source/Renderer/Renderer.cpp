@@ -8,14 +8,14 @@
 #include <vulkan/vk_enum_string_helper.h>
 
 
-
 namespace Corvus
 {
-    Renderer::Renderer(RendererSpecification  specification)
+    Renderer::Renderer(RendererSpecification specification)
         : m_Specification(std::move(specification))
     {
         m_Device = std::make_shared<Device>(m_Specification.window);
         m_Pipeline = std::make_shared<Pipeline>(m_Device, m_Specification.vertexShader, m_Specification.fragmentShader);
+        m_VertexBuffer = std::make_unique<VertexBuffer>(m_Specification.vertices, m_Device);
 
         createCommandBuffers();
         recordCommandBuffers(m_CommandBuffers[m_CurrentFrame], 0);
@@ -44,6 +44,11 @@ namespace Corvus
         presentImage(swapChain.getHandle(), imageIndex);
 
         updateCurrentFrame();
+    }
+
+    void Renderer::waitIdle() const
+    {
+        vkDeviceWaitIdle(m_Device->getDevice());
     }
 
     void Renderer::createCommandBuffers()
@@ -98,7 +103,7 @@ namespace Corvus
         m_CurrentFrame = (m_CurrentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
     }
 
-    void Renderer::recordCommandBuffers(VkCommandBuffer commandBuffer, uint32_t imageIndex) const
+    void Renderer::recordCommandBuffers(VkCommandBuffer commandBuffer, uint32_t imageIndex)
     {
         auto swapChain = m_Device->getSwapChain();
         auto extent = swapChain.getExtent();
@@ -111,9 +116,7 @@ namespace Corvus
         setViewport(commandBuffer, extent);
         setScissor(commandBuffer, extent);
 
-        // TODO: Remove static -> VK_ERROR_DEVICE_LOST
-        const static auto vertexBuffer = VertexBuffer(m_Specification.vertices, m_Device);
-        vertexBuffer.bind(commandBuffer);
+        m_VertexBuffer->bind(commandBuffer);
 
         vkCmdDraw(commandBuffer, static_cast<uint32_t>(m_Specification.vertices.size()), 1, 0, 0);
 
@@ -199,7 +202,8 @@ namespace Corvus
 
         if (success == VK_ERROR_OUT_OF_DATE_KHR)
         {
-            swapChain.recreate(device, m_Device->getPhysicalDevice(), m_Device->getSurface(), m_Specification.window->getHandle(),
+            swapChain.recreate(device, m_Device->getPhysicalDevice(), m_Device->getSurface(),
+                               m_Specification.window->getHandle(),
                                m_Device->getRenderPass());
             return imageIndex;
         }

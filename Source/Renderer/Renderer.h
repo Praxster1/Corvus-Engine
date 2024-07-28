@@ -35,6 +35,7 @@ namespace Corvus
         explicit Renderer(RendererSpecification  specification);
         ~Renderer();
         void draw();
+        void waitIdle() const;
 
         [[nodiscard]] std::shared_ptr<Device> getDevice() const { return m_Device; }
         [[nodiscard]] std::shared_ptr<Pipeline> getPipeline() const { return m_Pipeline; }
@@ -51,13 +52,15 @@ namespace Corvus
 
         const uint32_t MAX_FRAMES_IN_FLIGHT = 2;
         uint32_t m_CurrentFrame = 0;
+
+        std::unique_ptr<VertexBuffer> m_VertexBuffer;
     private:
         void createCommandBuffers();
         void createSyncObjects();
         void updateCurrentFrame();
 
         // Record pipeline
-        void recordCommandBuffers(VkCommandBuffer commandBuffer, uint32_t imageIndex) const;
+        void recordCommandBuffers(VkCommandBuffer commandBuffer, uint32_t imageIndex);
         void beginCommandBuffer() const;
         void beginRenderPass(VkCommandBuffer commandBuffer, VkFramebuffer& framebuffer, VkExtent2D extent) const;
         static void bindPipeline(VkCommandBuffer commandBuffer, VkPipeline pipeline);
