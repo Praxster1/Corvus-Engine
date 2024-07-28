@@ -5,13 +5,14 @@
 #ifndef ENGINE_VERTEXBUFFER_H
 #define ENGINE_VERTEXBUFFER_H
 
+#include <memory>
 #include <vulkan/vulkan_core.h>
+
+#include "Device.h"
 #include "Vertex.h"
-#include "Core/Device.h"
 
 namespace Corvus
 {
-
     class VertexBuffer
     {
     public:

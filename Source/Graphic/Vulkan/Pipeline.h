@@ -3,9 +3,12 @@
 
 #include <string>
 #include <vector>
-#include "Core/Device.h"
+
+#include "Device.h"
+#include "Shader.h"
+
 #include "Utility/Corvus.h"
-#include "Renderer/Shader.h"
+
 
 namespace Corvus
 {

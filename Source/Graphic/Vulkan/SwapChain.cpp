@@ -1,9 +1,6 @@
-//
-// Created by timow on 12/07/2024.
-//
-
 #include "SwapChain.h"
 #include "QueueFamilyIndices.h"
+
 #include "Utility/Corvus.h"
 #include "Utility/Log.h"
 

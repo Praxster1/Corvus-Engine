@@ -1,9 +1,9 @@
 list(APPEND LOCAL_SOURCE_FILES
-        Pipeline.cpp
+        ../Graphic/Vulkan/Pipeline.cpp
         Renderer.cpp
-        Vertex.cpp
-        VertexBuffer.cpp
-        Shader.cpp
+        ../Graphic/Vulkan/Vertex.cpp
+        ../Graphic/Vulkan/VertexBuffer.cpp
+        ../Graphic/Vulkan/Shader.cpp
 )
 
 foreach(file ${LOCAL_SOURCE_FILES})

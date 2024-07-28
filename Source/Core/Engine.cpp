@@ -1,8 +1,7 @@
 #include "Engine.h"
 #include "Utility/Log.h"
-#include "Device.h"
+#include "Graphic/Vulkan/Device.h"
 #include "Renderer/Renderer.h"
-#include "UserInterface.h"
 
 namespace Corvus
 {
@@ -13,8 +12,7 @@ namespace Corvus
         m_Device = std::make_shared<Device>(m_Window);
         m_Pipeline = std::make_shared<Pipeline>(m_Device, "Shaders/vertexShader.glsl.spv",
                                                 "Shaders/fragmentShader.glsl.spv");
-        m_UserInterface = std::make_shared<UserInterface>(m_Device, m_Window);
-        m_Renderer = std::make_unique<Renderer>(m_Device, m_Window, m_Pipeline, m_UserInterface);
+        m_Renderer = std::make_unique<Renderer>(m_Device, m_Window, m_Pipeline);
     }
 
     void Engine::run() const

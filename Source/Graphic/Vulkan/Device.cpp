@@ -1,9 +1,10 @@
-#include "Device.h"
-#include "Utility/Log.h"
 #include <utility>
 #include <set>
 
+#include "Device.h"
 #include "QueueFamilyIndices.h"
+
+#include "Utility/Log.h"
 
 namespace Corvus
 {

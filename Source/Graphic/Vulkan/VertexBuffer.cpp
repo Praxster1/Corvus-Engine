@@ -6,6 +6,9 @@
 
 #include <utility>
 
+#include "Device.h"
+#include "Utility/Corvus.h"
+
 namespace Corvus
 {
     VertexBuffer::VertexBuffer(const std::vector<Vertex>& vertices, std::shared_ptr<Device> device)

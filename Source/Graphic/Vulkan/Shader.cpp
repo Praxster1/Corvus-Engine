@@ -1,8 +1,7 @@
-//
-// Created by timow on 17/07/2024.
-//
-
 #include "Shader.h"
+
+#include <memory>
+#include <vector>
 
 namespace Corvus
 {

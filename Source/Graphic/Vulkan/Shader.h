@@ -5,7 +5,7 @@
 #ifndef ENGINE_SHADER_H
 #define ENGINE_SHADER_H
 
-#include "Core/Device.h"
+#include "Device.h"
 
 namespace Corvus
 {

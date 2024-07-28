@@ -4,7 +4,7 @@
 
 #include "DebugMessenger.h"
 #include "Utility/Corvus.h"
-#include "Instance.h"
+#include "Graphic/Vulkan/Instance.h"
 #include <vector>
 
 namespace Corvus

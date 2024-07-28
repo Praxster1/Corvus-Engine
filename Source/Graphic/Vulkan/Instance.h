@@ -10,7 +10,6 @@
 
 namespace Corvus
 {
-
     class Instance
     {
         VkInstance m_Instance = VK_NULL_HANDLE;

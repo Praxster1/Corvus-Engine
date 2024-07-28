@@ -1,26 +1,23 @@
-//
-// Created by timow on 18/07/2024.
-//
-
 #ifndef ENGINE_RENDERER_H
 #define ENGINE_RENDERER_H
 
-#include <memory>
-#include "Core/Device.h"
-#include "Core/Window.h"
-#include "Pipeline.h"
-#include "Vertex.h"
-#include "VertexBuffer.h"
 #include "glm/ext/matrix_transform.hpp"
-#include "Core/UserInterface.h"
+
+#include "Core/Window.h"
+
+#include "Graphic/Vulkan/Device.h"
+#include "Graphic/Vulkan/Pipeline.h"
+#include "Graphic/Vulkan/Vertex.h"
+#include "Graphic/Vulkan/VertexBuffer.h"
+
+#include <memory>
 
 namespace Corvus
 {
     class Renderer
     {
     public:
-        Renderer(std::shared_ptr<Device> device, std::shared_ptr<Window> window, std::shared_ptr<Pipeline> pipeline,
-                 std::shared_ptr<UserInterface> userInterface);
+        Renderer(std::shared_ptr<Device> device, std::shared_ptr<Window> window, std::shared_ptr<Pipeline> pipeline);
         ~Renderer();
         void draw();
 
@@ -34,7 +31,6 @@ namespace Corvus
         std::shared_ptr<Device> m_Device;
         std::shared_ptr<Window> m_Window;
         std::shared_ptr<Pipeline> m_Pipeline;
-        std::shared_ptr<UserInterface> m_UserInterface;
 
         std::vector<VkCommandBuffer> m_CommandBuffers;
         std::vector<VkSemaphore> m_ImageAvailableSemaphores;
