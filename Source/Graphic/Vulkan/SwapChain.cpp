@@ -1,4 +1,7 @@
 #include "SwapChain.h"
+
+#include <algorithm>
+
 #include "QueueFamilyIndices.h"
 
 #include "Utility/Corvus.h"

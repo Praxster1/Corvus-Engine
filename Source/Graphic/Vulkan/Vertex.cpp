@@ -4,6 +4,8 @@
 
 #include "Vertex.h"
 
+#include <array>
+
 namespace Corvus
 {
     VkVertexInputBindingDescription Vertex::getBindingDescription()
