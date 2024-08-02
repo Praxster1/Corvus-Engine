@@ -17,8 +17,10 @@ namespace Corvus
 {
     struct RendererSpecification
     {
-        std::shared_ptr<Window> window;
+        enum class API { Vulkan, OpenGL };
 
+        API api;
+        std::shared_ptr<Window> window;
         std::string vertexShader;
         std::string fragmentShader;
 
@@ -32,7 +34,7 @@ namespace Corvus
     class Renderer
     {
     public:
-        explicit Renderer(RendererSpecification  specification);
+        explicit Renderer(RendererSpecification specification);
         ~Renderer();
         void draw();
         void waitIdle() const;
@@ -54,6 +56,7 @@ namespace Corvus
         uint32_t m_CurrentFrame = 0;
 
         std::unique_ptr<VertexBuffer> m_VertexBuffer;
+
     private:
         void createCommandBuffers();
         void createSyncObjects();

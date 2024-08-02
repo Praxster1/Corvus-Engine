@@ -4,7 +4,11 @@ set(CMAKE_CXX_STANDARD 23)
 
 project(Engine)
 
-add_executable(Engine)
+add_executable(Engine
+        Source/Graphic/Vulkan/BufferUtils.h
+        Source/Graphic/Vulkan/BufferUtils.cpp
+)
+
 add_subdirectory(Source)
 add_subdirectory(External)
 add_subdirectory(Shaders)

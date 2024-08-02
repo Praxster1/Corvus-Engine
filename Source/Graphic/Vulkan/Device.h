@@ -25,7 +25,6 @@ namespace Corvus
     public:
         explicit Device(std::shared_ptr<Window> window);
         ~Device();
-        Device(const Device &) = delete;
 
         [[nodiscard]] Instance &getInstance() { return m_Instance; }
         [[nodiscard]] DebugMessenger &getDebugMessenger() { return m_DebugMessenger; }

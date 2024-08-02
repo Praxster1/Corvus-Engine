@@ -28,12 +28,15 @@ namespace Corvus
         std::shared_ptr<Device> m_Device;
         std::vector<Vertex> m_Vertices;
 
+        VkDeviceSize m_BufferSize;
+
         VkBuffer m_VertexBuffer = VK_NULL_HANDLE;
         VkDeviceMemory m_VertexBufferMemory = VK_NULL_HANDLE;
+
+        VkBuffer m_StagingBuffer = VK_NULL_HANDLE;
+        VkDeviceMemory m_StagingBufferMemory = VK_NULL_HANDLE;
     private:
-        void createBuffer();
         void allocateMemory();
-        [[nodiscard]] uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) const;
         void copyBufferMemory() const;
     };
 

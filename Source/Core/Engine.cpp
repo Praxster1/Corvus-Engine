@@ -11,6 +11,7 @@ namespace Corvus
         m_Window = std::make_shared<Window>("Corvus Engine", false, 800, 600,"Resources/icon.png");
 
         auto renderSpec = RendererSpecification{
+            RendererSpecification::API::Vulkan,
             m_Window,
             "Shaders/vertexShader.glsl.spv",
             "Shaders/fragmentShader.glsl.spv"
