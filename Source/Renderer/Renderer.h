@@ -13,6 +13,8 @@
 #include <memory>
 #include <filesystem>
 
+#include "Graphic/Vulkan/IndexBuffer.h"
+
 namespace Corvus
 {
     struct RendererSpecification
@@ -24,10 +26,15 @@ namespace Corvus
         std::string vertexShader;
         std::string fragmentShader;
 
-        std::vector<Vertex> vertices = {
-            {{0.0f, -0.5f, 0.0}, {1.0f, 0.0f, 1.0f}},
-            {{0.5f, 0.5f, 0.0}, {0.0f, 1.0f, 0.0f}},
-            {{-0.5f, 0.5f, 0.0}, {0.0f, 0.0f, 1.0f}}
+        const std::vector<Vertex> vertices = {
+            {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}},
+            {{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}},
+            {{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+            {{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}}
+        };
+
+        std::vector<uint32_t> indices = {
+            0, 1, 2, 2, 3, 0
         };
     };
 
@@ -56,6 +63,7 @@ namespace Corvus
         uint32_t m_CurrentFrame = 0;
 
         std::unique_ptr<VertexBuffer> m_VertexBuffer;
+        std::unique_ptr<IndexBuffer> m_IndexBuffer;
 
     private:
         void createCommandBuffers();

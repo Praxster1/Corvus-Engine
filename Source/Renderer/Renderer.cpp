@@ -16,6 +16,7 @@ namespace Corvus
         m_Device = std::make_shared<Device>(m_Specification.window);
         m_Pipeline = std::make_shared<Pipeline>(m_Device, m_Specification.vertexShader, m_Specification.fragmentShader);
         m_VertexBuffer = std::make_unique<VertexBuffer>(m_Specification.vertices, m_Device);
+        m_IndexBuffer = std::make_unique<IndexBuffer>(m_Specification.indices, m_Device);
 
         createCommandBuffers();
         recordCommandBuffers(m_CommandBuffers[m_CurrentFrame], 0);
@@ -117,8 +118,9 @@ namespace Corvus
         setScissor(commandBuffer, extent);
 
         m_VertexBuffer->bind(commandBuffer);
+        m_IndexBuffer->bind(commandBuffer);
 
-        vkCmdDraw(commandBuffer, static_cast<uint32_t>(m_Specification.vertices.size()), 1, 0, 0);
+        vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(m_Specification.indices.size()), 1, 0, 0, 0);
 
         cleanupFrame(commandBuffer);
     }

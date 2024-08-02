@@ -18,8 +18,8 @@ public:
                              VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 
     static uint32_t findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter,
-                                   const VkMemoryPropertyFlags properties);
-    static void copyBuffer(VkBuffer vk_buffer, VkBuffer m_vertex_buffer, uint64_t uint64, VkCommandPool commandPool, VkDevice device, VkQueue graphicsQueue);
+                                   VkMemoryPropertyFlags properties);
+    static void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, uint64_t deviceSize, VkCommandPool commandPool, VkDevice device, VkQueue graphicsQueue);
 };
 
 

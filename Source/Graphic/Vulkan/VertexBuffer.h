@@ -35,9 +35,6 @@ namespace Corvus
 
         VkBuffer m_StagingBuffer = VK_NULL_HANDLE;
         VkDeviceMemory m_StagingBufferMemory = VK_NULL_HANDLE;
-    private:
-        void allocateMemory();
-        void copyBufferMemory() const;
     };
 
 } // Corvus

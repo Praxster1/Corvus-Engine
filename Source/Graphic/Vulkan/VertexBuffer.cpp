@@ -48,24 +48,6 @@ namespace Corvus
         vkFreeMemory(device, m_VertexBufferMemory, nullptr);
     }
 
-    void VertexBuffer::allocateMemory()
-    {
-        VkMemoryRequirements memRequirements;
-        vkGetBufferMemoryRequirements(m_Device->getDevice(), m_VertexBuffer, &memRequirements);
-
-        VkMemoryAllocateInfo allocInfo = {
-            .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
-            .allocationSize = memRequirements.size,
-            .memoryTypeIndex = BufferUtils::findMemoryType(m_Device->getPhysicalDevice(),
-                                                           memRequirements.memoryTypeBits,
-                                                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT bitor
-                                                           VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
-        };
-
-        auto success = vkAllocateMemory(m_Device->getDevice(), &allocInfo, nullptr, &m_VertexBufferMemory);
-        CORVUS_ASSERT(success == VK_SUCCESS, "Failed to allocate vertex buffer memory!")
-    }
-
     void VertexBuffer::bind(VkCommandBuffer commandBuffer) const
     {
         const std::array vertexBuffers = {m_VertexBuffer};

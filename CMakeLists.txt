@@ -7,6 +7,8 @@ project(Engine)
 add_executable(Engine
         Source/Graphic/Vulkan/BufferUtils.h
         Source/Graphic/Vulkan/BufferUtils.cpp
+        Source/Graphic/Vulkan/IndexBuffer.h
+        Source/Graphic/Vulkan/IndexBuffer.cpp
 )
 
 add_subdirectory(Source)
