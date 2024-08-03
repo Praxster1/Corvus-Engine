@@ -22,5 +22,17 @@ target_sources(Engine PUBLIC
 
         ${CMAKE_CURRENT_SOURCE_DIR}/VertexBuffer.h
         ${CMAKE_CURRENT_SOURCE_DIR}/VertexBuffer.cpp
+
+        ${CMAKE_CURRENT_SOURCE_DIR}/BufferUtils.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/BufferUtils.cpp
+
+        ${CMAKE_CURRENT_SOURCE_DIR}/IndexBuffer.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/IndexBuffer.cpp
+
+        ${CMAKE_CURRENT_SOURCE_DIR}/UniformBuffer.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/UniformBuffer.cpp
+
+        ${CMAKE_CURRENT_SOURCE_DIR}/Shader.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/Shader.cpp
 )
 

@@ -4,6 +4,8 @@
 
 #include "BufferUtils.h"
 
+#include "Utility/Corvus.h"
+
 void BufferUtils::createBuffer(VkDevice device, VkPhysicalDevice physicalDevice, VkDeviceSize size,
                                VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer,
                                VkDeviceMemory& bufferMemory)
@@ -76,6 +78,7 @@ void BufferUtils::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSiz
         .dstOffset = 0,
         .size = deviceSize,
     };
+
     vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
     vkEndCommandBuffer(commandBuffer);
 

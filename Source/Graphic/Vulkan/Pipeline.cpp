@@ -14,12 +14,14 @@ namespace Corvus
           m_VertexShader("Vertex", readFile(vertexShader), m_Device),
           m_FragmentShader("Fragment", readFile(fragmentShader), m_Device)
     {
+        createDescriptorSetLayout();
         createGraphicsPipeline();
     }
 
     Pipeline::~Pipeline()
     {
         auto device = m_Device->getDevice();
+        vkDestroyDescriptorSetLayout(device, m_DescriptorSetLayout, nullptr);
         vkDestroyPipelineLayout(device, m_PipelineLayout, nullptr);
         vkDestroyPipeline(device, m_Pipeline, nullptr);
     }
@@ -41,9 +43,29 @@ namespace Corvus
         return buffer;
     }
 
+    void Pipeline::createDescriptorSetLayout()
+    {
+        VkDescriptorSetLayoutBinding uboLayoutBinding = {
+            .binding = 0,
+            .descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+            .descriptorCount = 1,
+            .stageFlags = VK_SHADER_STAGE_VERTEX_BIT,
+            .pImmutableSamplers = nullptr
+        };
+
+        VkDescriptorSetLayoutCreateInfo layoutInfo = {
+            .sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
+            .bindingCount = 1,
+            .pBindings = &uboLayoutBinding
+        };
+
+        auto success = vkCreateDescriptorSetLayout(m_Device->getDevice(), &layoutInfo, nullptr, &m_DescriptorSetLayout);
+        CORVUS_ASSERT(success == VK_SUCCESS, "Failed to create descriptor set layout!")
+    }
+
     void Pipeline::createGraphicsPipeline()
     {
-        std::vector<VkDynamicState> dynamicStates = {
+        std::vector dynamicStates = {
             VK_DYNAMIC_STATE_VIEWPORT,
             VK_DYNAMIC_STATE_SCISSOR
         };
@@ -124,8 +146,8 @@ namespace Corvus
 
         VkPipelineLayoutCreateInfo pipelineLayoutInfo = {
             .sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
-            .setLayoutCount = 0,
-            .pSetLayouts = nullptr,
+            .setLayoutCount = 1,
+            .pSetLayouts = &m_DescriptorSetLayout,
             .pushConstantRangeCount = 0,
             .pPushConstantRanges = nullptr
         };

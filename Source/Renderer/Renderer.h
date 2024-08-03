@@ -14,6 +14,7 @@
 #include <filesystem>
 
 #include "Graphic/Vulkan/IndexBuffer.h"
+#include "Graphic/Vulkan/UniformBuffer.h"
 
 namespace Corvus
 {
@@ -64,14 +65,17 @@ namespace Corvus
 
         std::unique_ptr<VertexBuffer> m_VertexBuffer;
         std::unique_ptr<IndexBuffer> m_IndexBuffer;
+        std::vector<UniformBuffer> m_UniformBuffers;
 
     private:
         void createCommandBuffers();
         void createSyncObjects();
         void updateCurrentFrame();
 
+        void updateUniformBuffer(uint32_t uint32);
+
         // Record pipeline
-        void recordCommandBuffers(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+        void recordCommandBuffers(VkCommandBuffer commandBuffer, uint32_t imageIndex) const;
         void beginCommandBuffer() const;
         void beginRenderPass(VkCommandBuffer commandBuffer, VkFramebuffer& framebuffer, VkExtent2D extent) const;
         static void bindPipeline(VkCommandBuffer commandBuffer, VkPipeline pipeline);

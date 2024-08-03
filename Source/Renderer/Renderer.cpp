@@ -18,6 +18,11 @@ namespace Corvus
         m_VertexBuffer = std::make_unique<VertexBuffer>(m_Specification.vertices, m_Device);
         m_IndexBuffer = std::make_unique<IndexBuffer>(m_Specification.indices, m_Device);
 
+        for (size_t uboIndex = 0; uboIndex < MAX_FRAMES_IN_FLIGHT; uboIndex++)
+        {
+            m_UniformBuffers.emplace_back(m_Device);
+        }
+
         createCommandBuffers();
         recordCommandBuffers(m_CommandBuffers[m_CurrentFrame], 0);
         createSyncObjects();
@@ -40,7 +45,12 @@ namespace Corvus
 
         synchronize(device);
         auto imageIndex = acquireNextImage(device, swapChain);
-        prepareCommandBuffer(imageIndex);
+
+        vkResetCommandBuffer(m_CommandBuffers[m_CurrentFrame], 0);
+        recordCommandBuffers(m_CommandBuffers[m_CurrentFrame], imageIndex);
+
+        updateUniformBuffer(m_CurrentFrame);
+
         submitGraphicsQueue();
         presentImage(swapChain.getHandle(), imageIndex);
 
@@ -104,7 +114,26 @@ namespace Corvus
         m_CurrentFrame = (m_CurrentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
     }
 
-    void Renderer::recordCommandBuffers(VkCommandBuffer commandBuffer, uint32_t imageIndex)
+    void Renderer::updateUniformBuffer(uint32_t imageIndex)
+    {
+        static auto startTime = std::chrono::high_resolution_clock::now();
+
+        auto swapChainExtent = m_Device->getSwapChain().getExtent();
+
+        auto currentTime = std::chrono::high_resolution_clock::now();
+        float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+
+        UniformBufferObject ubo{
+            .model = rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
+            .view = lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
+            .projection = glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float) swapChainExtent.height, 0.1f, 10.0f),
+        };
+
+        ubo.projection[1][1] *= -1; // Flip y coordinate (glm uses OpenGL, Vulkan uses DirectX coordinate system)
+        memcpy(m_UniformBuffers[imageIndex].getMappedData(), &ubo, sizeof(ubo));
+    }
+
+    void Renderer::recordCommandBuffers(const VkCommandBuffer commandBuffer, const uint32_t imageIndex) const
     {
         auto swapChain = m_Device->getSwapChain();
         auto extent = swapChain.getExtent();
@@ -216,8 +245,6 @@ namespace Corvus
 
     void Renderer::prepareCommandBuffer(uint32_t imageIndex)
     {
-        vkResetCommandBuffer(m_CommandBuffers[m_CurrentFrame], 0);
-        recordCommandBuffers(m_CommandBuffers[m_CurrentFrame], imageIndex);
     }
 
     void Renderer::submitGraphicsQueue()

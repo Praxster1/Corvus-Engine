@@ -7,8 +7,6 @@
 
 #include <vulkan/vulkan_core.h>
 
-#include "Utility/Corvus.h"
-
 class BufferUtils
 {
 public:
@@ -19,7 +17,9 @@ public:
 
     static uint32_t findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter,
                                    VkMemoryPropertyFlags properties);
-    static void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, uint64_t deviceSize, VkCommandPool commandPool, VkDevice device, VkQueue graphicsQueue);
+
+    static void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, uint64_t deviceSize, VkCommandPool commandPool,
+                           VkDevice device, VkQueue graphicsQueue);
 };
 
 

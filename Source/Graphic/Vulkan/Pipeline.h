@@ -28,8 +28,11 @@ namespace Corvus
 
         VkPipelineLayout m_PipelineLayout = VK_NULL_HANDLE;
         VkPipeline m_Pipeline = VK_NULL_HANDLE;
+        VkDescriptorSetLayout m_DescriptorSetLayout = VK_NULL_HANDLE;
+
 
         static std::vector<char> readFile(const std::string &filename);
+        void createDescriptorSetLayout();
         void createGraphicsPipeline();
     };
 

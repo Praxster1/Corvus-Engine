@@ -5,10 +5,8 @@ set(CMAKE_CXX_STANDARD 23)
 project(Engine)
 
 add_executable(Engine
-        Source/Graphic/Vulkan/BufferUtils.h
-        Source/Graphic/Vulkan/BufferUtils.cpp
-        Source/Graphic/Vulkan/IndexBuffer.h
-        Source/Graphic/Vulkan/IndexBuffer.cpp
+        Source/Graphic/Vulkan/UniformBuffer.cpp
+        Source/Graphic/Vulkan/UniformBuffer.h
 )
 
 add_subdirectory(Source)
